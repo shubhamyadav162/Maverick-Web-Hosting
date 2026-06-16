@@ -58,7 +58,7 @@ export const PRODUCTS_DATA: ServiceProduct[] = [
       'Basic navigation & state management',
       'Project documentation & handoff guide',
     ],
-    price: 20000,
+    price: 10000,
     iconName: 'Smartphone',
   },
   {
@@ -72,7 +72,7 @@ export const PRODUCTS_DATA: ServiceProduct[] = [
       'Server-side rendering & routing setup',
       'Vercel/cloud deployment configuration',
     ],
-    price: 25000,
+    price: 18000,
     iconName: 'Globe',
   },
   {
@@ -86,7 +86,7 @@ export const PRODUCTS_DATA: ServiceProduct[] = [
       'Admin dashboard for flow monitoring',
       'Error handling & logging infrastructure',
     ],
-    price: 25000,
+    price: 22000,
     iconName: 'Workflow',
   },
   {
@@ -114,7 +114,7 @@ export const PRODUCTS_DATA: ServiceProduct[] = [
       'Smooth scroll-triggered animations',
       'SEO metadata & Open Graph integration',
     ],
-    price: 15000,
+    price: 5000,
     iconName: 'Layout',
   },
   {
@@ -142,7 +142,7 @@ export const PRODUCTS_DATA: ServiceProduct[] = [
       'Payment gateway integration',
       'Order tracking admin dashboard',
     ],
-    price: 25000,
+    price: 20000,
     iconName: 'ShoppingCart',
   },
   {
@@ -156,7 +156,7 @@ export const PRODUCTS_DATA: ServiceProduct[] = [
       'OpenAPI/Swagger documentation',
       'Automated integration test suite',
     ],
-    price: 25000,
+    price: 16000,
     iconName: 'Server',
   },
 ];
