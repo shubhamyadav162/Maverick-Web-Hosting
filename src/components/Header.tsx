@@ -73,9 +73,15 @@ export default function Header({ currentView, onNavigate, user, onLogout, onOpen
             </button>
             <button
               onClick={() => handleLinkClick('services')}
-              className={`text-sm font-medium transition-colors hover:text-white ${
+              className={`text-sm font-semibold transition-colors hover:text-white ${
                 currentView === 'services' ? 'text-white' : 'text-gray-400'
               }`}
+            >
+              Products
+            </button>
+            <button
+              onClick={() => handleLinkClick('home', 'services-section')}
+              className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
             >
               Services
             </button>
@@ -227,6 +233,12 @@ export default function Header({ currentView, onNavigate, user, onLogout, onOpen
                 className={`block w-full rounded-lg px-3 py-2 text-left text-base font-semibold ${
                   currentView === 'services' ? 'bg-white/10 text-white' : 'text-gray-400 hover:bg-white/5 hover:text-white'
                 }`}
+              >
+                Products
+              </button>
+              <button
+                onClick={() => handleLinkClick('home', 'services-section')}
+                className="block w-full rounded-lg px-3 py-2 text-left text-base font-semibold text-gray-400 hover:bg-white/5 hover:text-white"
               >
                 Services
               </button>
