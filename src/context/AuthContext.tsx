@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { supabase } from '../lib/supabase';
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import { supabase, isConfigured } from '../lib/supabase';
 import type { User } from '../types';
 import type { Session } from '@supabase/supabase-js';
 
@@ -7,6 +7,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  isSupabaseConfigured: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -38,6 +39,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!isConfigured) {
+      setIsLoading(false);
+      return;
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(mapSupabaseUser(session));
@@ -52,7 +58,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = useCallback(async () => {
+    if (!isConfigured) return;
+
     const redirectTo = import.meta.env.VITE_APP_URL
       ? `${import.meta.env.VITE_APP_URL}/auth/callback`
       : `${window.location.origin}/auth/callback`;
@@ -61,16 +69,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       provider: 'google',
       options: { redirectTo },
     });
-  };
+  }, []);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
+    if (!isConfigured) return;
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
-  };
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, session, isLoading, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{ user, session, isLoading, isSupabaseConfigured: isConfigured, signInWithGoogle, signOut }}>
       {children}
     </AuthContext.Provider>
   );
