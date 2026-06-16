@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Menu, X, ArrowUpRight, LogOut, Code, Sun, Moon, Layers } from 'lucide-react';
+import { Menu, X, ArrowUpRight, LogOut, Code, Layers } from 'lucide-react';
 import { View, User } from '../types';
 import Logo from './Logo';
 
@@ -10,11 +10,9 @@ interface HeaderProps {
   user: User | null;
   onLogout: () => void;
   onOpenLogin: () => void;
-  theme: 'dark' | 'light';
-  onToggleTheme: () => void;
 }
 
-export default function Header({ currentView, onNavigate, user, onLogout, onOpenLogin, theme, onToggleTheme }: HeaderProps) {
+export default function Header({ currentView, onNavigate, user, onLogout, onOpenLogin }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -106,16 +104,6 @@ export default function Header({ currentView, onNavigate, user, onLogout, onOpen
 
           {/* Right Actions */}
           <div className="hidden md:flex items-center gap-4">
-            {/* Theme Toggle Button */}
-            <button
-              id="theme-toggle-desktop"
-              onClick={onToggleTheme}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-200"
-              title={theme === 'dark' ? 'Switch to high-contrast Light Mode' : 'Switch to Pitch Black mode'}
-            >
-              {theme === 'light' ? <Moon className="h-4.5 w-4.5 text-indigo-500" /> : <Sun className="h-4.5 w-4.5 text-amber-400" />}
-            </button>
-
             {user ? (
               <div className="relative">
                 <button
@@ -195,16 +183,6 @@ export default function Header({ currentView, onNavigate, user, onLogout, onOpen
 
           {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center gap-3">
-            {/* Mobile Theme Toggle Button */}
-            <button
-              id="theme-toggle-mobile"
-              onClick={onToggleTheme}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/5 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
-              title={theme === 'dark' ? 'Switch to high-contrast Light Mode' : 'Switch to Pitch Black mode'}
-            >
-              {theme === 'light' ? <Moon className="h-4 w-4 text-indigo-500" /> : <Sun className="h-4 w-4 text-amber-400" />}
-            </button>
-
             {user && (
               <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-500 font-mono text-xs font-bold text-white">
                 {user.initials}

@@ -22,10 +22,6 @@ export default function App() {
   const { user, isLoading: authLoading, signOut } = useAuth();
   const [currentView, setCurrentView] = useState<View>('home');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    return (localStorage.getItem('mavrick_theme') as 'dark' | 'light') || 'dark';
-  });
-
   // Routing for auth callback
   const [isAuthCallbackRoute, setIsAuthCallbackRoute] = useState(false);
 
@@ -42,26 +38,10 @@ export default function App() {
     }
   }, [user]);
 
-  // Apply theme class to document element
+  // Ensure dark theme always
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'light') {
-      root.classList.add('light');
-    } else {
-      root.classList.remove('light');
-    }
-    localStorage.setItem('mavrick_theme', theme);
-  }, [theme]);
-
-  const handleToggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    showToast(
-      `Switched to ${nextTheme === 'light' ? 'High-Contrast Light' : 'Pitch Black'} mode successfully.`,
-      'info',
-      2500
-    );
-  };
+    document.documentElement.classList.remove('light');
+  }, []);
 
   const handleLoginSuccess = (user: User, rememberMe = true) => {
     if (rememberMe) {
@@ -109,8 +89,6 @@ export default function App() {
         user={user}
         onLogout={handleLogout}
         onOpenLogin={() => setIsLoginModalOpen(true)}
-        theme={theme}
-        onToggleTheme={handleToggleTheme}
       />
 
       {/* Main viewport region */}
