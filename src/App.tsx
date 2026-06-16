@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail } from 'lucide-react';
 import { View, User } from './types';
@@ -13,22 +13,51 @@ import Testimonials from './components/Testimonials';
 import LegalPage from './components/LegalPage';
 import LoginModal from './components/LoginModal';
 import Dashboard from './components/Dashboard';
+import ContactPage from './components/ContactPage';
 import AuthCallback from './pages/AuthCallback';
 import { useToast } from './context/ToastContext';
 import { useAuth } from './context/AuthContext';
 
+const PATH_TO_VIEW: Record<string, View> = {
+  '/terms': 'terms',
+  '/privacy': 'privacy',
+  '/refund': 'refund',
+  '/contact': 'contact',
+  '/dashboard': 'dashboard',
+};
+
+const VIEW_TO_PATH: Record<View, string> = {
+  home: '/',
+  terms: '/terms',
+  privacy: '/privacy',
+  refund: '/refund',
+  contact: '/contact',
+  dashboard: '/dashboard',
+};
+
 export default function App() {
   const { showToast } = useToast();
-  const { user, isLoading: authLoading, signOut } = useAuth();
-  const [currentView, setCurrentView] = useState<View>('home');
+  const { user, signOut } = useAuth();
+  const [currentView, setCurrentView] = useState<View>(() => {
+    return PATH_TO_VIEW[window.location.pathname] || 'home';
+  });
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  // Routing for auth callback
   const [isAuthCallbackRoute, setIsAuthCallbackRoute] = useState(false);
 
   useEffect(() => {
     if (window.location.pathname === '/auth/callback') {
       setIsAuthCallbackRoute(true);
     }
+  }, []);
+
+  // Sync browser back/forward with currentView
+  useEffect(() => {
+    const handlePopState = () => {
+      const view = PATH_TO_VIEW[window.location.pathname] || 'home';
+      setCurrentView(view);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   // Auto-navigate to dashboard when Supabase auth completes
@@ -62,9 +91,11 @@ export default function App() {
     showToast('Secure partner session cleared successfully.', 'info', 3000);
   };
 
-  const handleNavigate = (view: View) => {
+  const handleNavigate = useCallback((view: View) => {
     setCurrentView(view);
-  };
+    const path = VIEW_TO_PATH[view] || '/';
+    window.history.pushState({ view }, '', path);
+  }, []);
 
   const handleInitiateConsultation = () => {
     setCurrentView('home');
@@ -82,7 +113,6 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen bg-black text-gray-300 antialiased selection:bg-indigo-500/30 selection:text-white">
-      {/* Permanent Header component */}
       <Header
         currentView={currentView}
         onNavigate={handleNavigate}
@@ -91,7 +121,6 @@ export default function App() {
         onOpenLogin={() => setIsLoginModalOpen(true)}
       />
 
-      {/* Main viewport region */}
       <main id="app-viewport">
         <AnimatePresence mode="wait">
           {currentView === 'home' && (
@@ -126,9 +155,8 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="pt-24 bg-black"
             >
-              <Configurator userEmail={user?.email} />
+              <ContactPage onNavigate={handleNavigate} />
             </motion.div>
           )}
 
@@ -146,44 +174,32 @@ export default function App() {
 
           {currentView === 'terms' && (
             <motion.div key="terms-view">
-              <LegalPage
-                type="terms"
-                onNavigate={handleNavigate}
-              />
+              <LegalPage type="terms" onNavigate={handleNavigate} />
             </motion.div>
           )}
 
           {currentView === 'privacy' && (
             <motion.div key="privacy-view">
-              <LegalPage
-                type="privacy"
-                onNavigate={handleNavigate}
-              />
+              <LegalPage type="privacy" onNavigate={handleNavigate} />
             </motion.div>
           )}
 
           {currentView === 'refund' && (
             <motion.div key="refund-view">
-              <LegalPage
-                type="refund"
-                onNavigate={handleNavigate}
-              />
+              <LegalPage type="refund" onNavigate={handleNavigate} />
             </motion.div>
           )}
         </AnimatePresence>
       </main>
 
-      {/* Permanent Footer component */}
       <Footer onNavigate={handleNavigate} />
 
-      {/* Interactive Google Login Modal flow */}
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={handleLoginSuccess}
       />
 
-      {/* Fixed Floating Email Action Button */}
       <motion.div
         id="floating-email-action"
         initial={{ opacity: 0, scale: 0.8, y: 20 }}
@@ -191,7 +207,6 @@ export default function App() {
         transition={{ delay: 1, type: 'spring', stiffness: 260, damping: 20 }}
         className="fixed bottom-6 right-6 z-50 flex items-center gap-2 group"
       >
-        {/* Expanded hover tooltip text */}
         <span className="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-lg border border-white/10 bg-black/90 px-3 py-1.5 text-xs font-mono font-medium text-gray-200 opacity-0 shadow-xl transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 translate-x-2 backdrop-blur-sm">
           Quick Work Inquiry
         </span>
@@ -204,7 +219,6 @@ export default function App() {
           className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-[#0B4A94] to-[#00A896] text-white shadow-[0_0_20px_rgba(11,74,148,0.4)] transition-shadow duration-300 hover:shadow-[0_0_25px_rgba(0,168,150,0.6)] border border-white/15 relative overflow-hidden"
           title="Send a quick email to Mavrick Support"
         >
-          {/* Pulsing ring animation inside button */}
           <span className="absolute inset-0 rounded-full bg-white/10 animate-ping opacity-25 pointer-events-none" />
           <Mail className="h-6 w-6 stroke-[2]" />
         </motion.a>
