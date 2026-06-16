@@ -72,7 +72,7 @@ export const PRODUCTS_DATA: ServiceProduct[] = [
       'Server-side rendering & routing setup',
       'Vercel/cloud deployment configuration',
     ],
-    price: 30000,
+    price: 25000,
     iconName: 'Globe',
   },
   {
@@ -100,7 +100,7 @@ export const PRODUCTS_DATA: ServiceProduct[] = [
       'CSV/PDF export functionality',
       'Role-based user access controls',
     ],
-    price: 75000,
+    price: 25000,
     iconName: 'BarChart3',
   },
   {
@@ -128,7 +128,7 @@ export const PRODUCTS_DATA: ServiceProduct[] = [
       'React/Next.js frontend integration',
       'Staging deployment & demo environment',
     ],
-    price: 50000,
+    price: 25000,
     iconName: 'Box',
   },
   {
@@ -142,7 +142,7 @@ export const PRODUCTS_DATA: ServiceProduct[] = [
       'Payment gateway integration',
       'Order tracking admin dashboard',
     ],
-    price: 35000,
+    price: 25000,
     iconName: 'ShoppingCart',
   },
   {
@@ -156,7 +156,7 @@ export const PRODUCTS_DATA: ServiceProduct[] = [
       'OpenAPI/Swagger documentation',
       'Automated integration test suite',
     ],
-    price: 40000,
+    price: 25000,
     iconName: 'Server',
   },
 ];
