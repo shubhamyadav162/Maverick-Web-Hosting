@@ -86,7 +86,15 @@ export default function App() {
     }
     showToast(`Access Granted. Welcome back, ${user.name}.`, 'success', 3500);
     setIsLoginModalOpen(false);
-    setCurrentView('dashboard');
+
+    // Redirect to checkout if user had a pending booking
+    const pendingService = sessionStorage.getItem('mavrick_pending_checkout');
+    if (pendingService) {
+      sessionStorage.removeItem('mavrick_pending_checkout');
+      handleNavigateToCheckout(pendingService);
+    } else {
+      setCurrentView('dashboard');
+    }
   };
 
   const handleLogout = async () => {
@@ -113,6 +121,14 @@ export default function App() {
     }, 120);
   };
 
+  const handleNavigateToCheckout = (serviceId: string) => {
+    const path = `/checkout?service=${serviceId}`;
+    window.history.pushState({ view: 'checkout' }, '', path);
+    setCurrentView('checkout');
+  };
+
+  const openLogin = useCallback(() => setIsLoginModalOpen(true), []);
+
   if (isAuthCallbackRoute) {
     return <AuthCallback />;
   }
@@ -124,7 +140,7 @@ export default function App() {
         onNavigate={handleNavigate}
         user={user}
         onLogout={handleLogout}
-        onOpenLogin={() => setIsLoginModalOpen(true)}
+        onOpenLogin={openLogin}
       />
 
       <main id="app-viewport">
@@ -174,7 +190,12 @@ export default function App() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <ServicesPage onNavigate={handleNavigate} />
+              <ServicesPage
+                user={user}
+                onNavigate={handleNavigate}
+                onNavigateToCheckout={handleNavigateToCheckout}
+                onOpenLogin={openLogin}
+              />
             </motion.div>
           )}
 
@@ -186,7 +207,11 @@ export default function App() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <CheckoutPage onNavigate={handleNavigate} />
+              <CheckoutPage
+                user={user}
+                onNavigate={handleNavigate}
+                onOpenLogin={openLogin}
+              />
             </motion.div>
           )}
 
