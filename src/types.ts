@@ -1,4 +1,4 @@
-export type View = 'home' | 'terms' | 'privacy' | 'refund' | 'contact' | 'dashboard';
+export type View = 'home' | 'terms' | 'privacy' | 'refund' | 'contact' | 'services' | 'checkout' | 'dashboard';
 
 export interface User {
   name: string;
@@ -26,4 +26,14 @@ export interface ServiceItem {
   title: string;
   description: string;
   features: string[];
+}
+
+export interface ServiceProduct {
+  id: string;
+  title: string;
+  tagline: string;
+  description: string;
+  deliverables: string[];
+  price: number;
+  iconName: string;
 }

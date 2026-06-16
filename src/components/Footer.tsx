@@ -63,6 +63,17 @@ export default function Footer({ onNavigate }: FooterProps) {
             <ul className="space-y-2 text-xs">
               <li>
                 <button
+                  onClick={() => {
+                    onNavigate('services');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="text-gray-400 hover:text-white transition-colors text-left font-semibold"
+                >
+                  Product Catalog
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => navigateToSection('services-section')}
                   className="text-gray-400 hover:text-white transition-colors text-left"
                 >

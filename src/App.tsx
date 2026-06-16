@@ -14,6 +14,8 @@ import LegalPage from './components/LegalPage';
 import LoginModal from './components/LoginModal';
 import Dashboard from './components/Dashboard';
 import ContactPage from './components/ContactPage';
+import ServicesPage from './components/ServicesPage';
+import CheckoutPage from './components/CheckoutPage';
 import AuthCallback from './pages/AuthCallback';
 import { useToast } from './context/ToastContext';
 import { useAuth } from './context/AuthContext';
@@ -23,6 +25,8 @@ const PATH_TO_VIEW: Record<string, View> = {
   '/privacy': 'privacy',
   '/refund': 'refund',
   '/contact': 'contact',
+  '/services': 'services',
+  '/checkout': 'checkout',
   '/dashboard': 'dashboard',
 };
 
@@ -32,6 +36,8 @@ const VIEW_TO_PATH: Record<View, string> = {
   privacy: '/privacy',
   refund: '/refund',
   contact: '/contact',
+  services: '/services',
+  checkout: '/checkout',
   dashboard: '/dashboard',
 };
 
@@ -157,6 +163,30 @@ export default function App() {
               transition={{ duration: 0.4 }}
             >
               <ContactPage onNavigate={handleNavigate} />
+            </motion.div>
+          )}
+
+          {currentView === 'services' && (
+            <motion.div
+              key="services-view"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <ServicesPage onNavigate={handleNavigate} />
+            </motion.div>
+          )}
+
+          {currentView === 'checkout' && (
+            <motion.div
+              key="checkout-view"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <CheckoutPage onNavigate={handleNavigate} />
             </motion.div>
           )}
 

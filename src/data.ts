@@ -1,4 +1,4 @@
-import { ServiceItem } from './types';
+import { ServiceItem, ServiceProduct } from './types';
 
 export const COMPLIANCE_DATA = {
   agencyName: "Mavrick Web Development",
@@ -44,6 +44,121 @@ export const SERVICES_DATA: ServiceItem[] = [
       'Robust Client Database Optimizations'
     ]
   }
+];
+
+export const PRODUCTS_DATA: ServiceProduct[] = [
+  {
+    id: 'starter-mobile',
+    title: 'Starter Mobile App Development Blueprint',
+    tagline: 'Custom cross-platform MVP layout',
+    description: 'A foundational mobile application blueprint engineered for startups and businesses aiming to establish a cross-platform presence. Delivered with a clean, scalable architecture ready for market validation.',
+    deliverables: [
+      'Cross-platform MVP codebase (React Native)',
+      'Core UI/UX screen flow (up to 5 screens)',
+      'Basic navigation & state management',
+      'Project documentation & handoff guide',
+    ],
+    price: 20000,
+    iconName: 'Smartphone',
+  },
+  {
+    id: 'premium-react',
+    title: 'Premium React/Next.js Business Architecture',
+    tagline: 'Complete full-stack deployment',
+    description: 'A production-grade React or Next.js full-stack architecture tailored for business applications. Includes server-side rendering, API integration, and one-click deployment pipeline.',
+    deliverables: [
+      'Full Next.js or React project scaffold',
+      'Custom component library',
+      'Server-side rendering & routing setup',
+      'Vercel/cloud deployment configuration',
+    ],
+    price: 30000,
+    iconName: 'Globe',
+  },
+  {
+    id: 'workflow-automation',
+    title: 'Custom Tailor-Made Workflow Automation',
+    tagline: 'API & webhook orchestrations',
+    description: 'Bespoke automation pipelines connecting your tools, APIs, and business logic. Eliminate manual overhead with secure, event-driven orchestrations built to your exact specifications.',
+    deliverables: [
+      'Custom API integration architecture',
+      'Webhook event-driven orchestration',
+      'Admin dashboard for flow monitoring',
+      'Error handling & logging infrastructure',
+    ],
+    price: 25000,
+    iconName: 'Workflow',
+  },
+  {
+    id: 'enterprise-analytics',
+    title: 'Enterprise Analytics & Dashboard Portal',
+    tagline: 'High-performance metrics setup',
+    description: 'A premium analytics dashboard built for data-driven decision-making. Visualize complex metrics with real-time charts, export capabilities, and role-based access control.',
+    deliverables: [
+      'Real-time data visualization dashboard',
+      'Custom KPI metric tracking modules',
+      'CSV/PDF export functionality',
+      'Role-based user access controls',
+    ],
+    price: 75000,
+    iconName: 'BarChart3',
+  },
+  {
+    id: 'saas-landing',
+    title: 'High-Conversion SaaS Landing Experience',
+    tagline: 'Apple-style minimalist UI',
+    description: 'A conversion-optimized SaaS landing page with meticulous typography, fluid micro-interactions, and premium visual hierarchy. Built to maximize sign-ups and reduce bounce rates.',
+    deliverables: [
+      'Pixel-perfect responsive landing page',
+      'Conversion-optimized layout & copy grid',
+      'Smooth scroll-triggered animations',
+      'SEO metadata & Open Graph integration',
+    ],
+    price: 15000,
+    iconName: 'Layout',
+  },
+  {
+    id: 'fullstack-mvp',
+    title: 'Full-Stack MVP Product Engineering',
+    tagline: 'Database, backend, and frontend logic',
+    description: 'End-to-end MVP engineering covering database schema design, RESTful API development, and a polished frontend. Ideal for founders needing a shippable product in weeks.',
+    deliverables: [
+      'PostgreSQL/MySQL database schema',
+      'RESTful API with authentication',
+      'React/Next.js frontend integration',
+      'Staging deployment & demo environment',
+    ],
+    price: 50000,
+    iconName: 'Box',
+  },
+  {
+    id: 'ecommerce',
+    title: 'E-Commerce Infrastructure Integration',
+    tagline: 'Secure cart & catalog systems',
+    description: 'A secure, scalable e-commerce foundation with product catalog management, shopping cart logic, payment gateway integration, and order tracking dashboards.',
+    deliverables: [
+      'Product catalog & inventory management',
+      'Shopping cart & checkout flow',
+      'Payment gateway integration',
+      'Order tracking admin dashboard',
+    ],
+    price: 35000,
+    iconName: 'ShoppingCart',
+  },
+  {
+    id: 'api-framework',
+    title: 'Dedicated API Framework Architecture',
+    tagline: 'Scalable backend microservices',
+    description: 'A robust, production-ready API framework built with Node.js or Python. Includes rate limiting, caching layers, comprehensive documentation, and automated test coverage.',
+    deliverables: [
+      'Modular microservice architecture',
+      'API rate limiting & caching layer',
+      'OpenAPI/Swagger documentation',
+      'Automated integration test suite',
+    ],
+    price: 40000,
+    iconName: 'Server',
+  },
 ];
 
 export const TERMS_VERBATIM = `Terms and Conditions
