@@ -1,6 +1,6 @@
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, FormEvent } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, ShieldCheck, Loader2, Check, LogIn } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Loader2, Check, LogIn, ShoppingBag } from 'lucide-react';
 import { User, View } from '../types';
 import { PRODUCTS_DATA } from '../data';
 
@@ -18,19 +18,18 @@ function formatPrice(price: number): string {
   }).format(price);
 }
 
+function getServiceIdFromUrl(): string | null {
+  if (typeof window === 'undefined') return null;
+  const params = new URLSearchParams(window.location.search);
+  return params.get('service');
+}
+
 export default function CheckoutPage({ user, onNavigate, onOpenLogin }: CheckoutPageProps) {
-  const [serviceId, setServiceId] = useState<string | null>(null);
+  const [serviceId] = useState<string | null>(getServiceIdFromUrl);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const product = PRODUCTS_DATA.find((p) => p.id === serviceId);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('service');
-    setServiceId(id);
-  }, []);
-
   const basePrice = product?.price || 0;
   const gstAmount = Math.round(basePrice * 0.18);
   const totalPayable = basePrice + gstAmount;
@@ -39,7 +38,6 @@ export default function CheckoutPage({ user, onNavigate, onOpenLogin }: Checkout
     e.preventDefault();
     setIsProcessing(true);
 
-    // Simulate gateway redirect handshake
     await new Promise((r) => setTimeout(r, 2000));
 
     setIsProcessing(false);
@@ -96,24 +94,30 @@ export default function CheckoutPage({ user, onNavigate, onOpenLogin }: Checkout
             </div>
           </div>
         ) : !product ? (
-          <div className="rounded-2xl border border-white/5 bg-[#0B0B0B] p-12 text-center">
-            <p className="font-mono text-sm text-gray-400">This service is currently unavailable. Please return to the catalog.</p>
+          <div className="rounded-2xl border border-white/5 bg-[#0B0B0B] p-12 text-center max-w-lg mx-auto">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 mb-4">
+              <ShoppingBag className="h-6 w-6 text-gray-500" />
+            </div>
+            <h2 className="font-display text-lg font-bold text-white mb-2">Product Unavailable</h2>
+            <p className="text-xs text-gray-400 mb-6 max-w-xs mx-auto leading-relaxed">
+              The service you are looking for does not exist or has been removed from our catalog.
+            </p>
             <button
               onClick={() => {
                 window.history.pushState({}, '', '/services');
                 onNavigate('services');
               }}
-              className="mt-4 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-semibold text-white hover:bg-indigo-500 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 px-6 py-3 text-xs font-semibold text-white shadow-lg shadow-indigo-500/10 transition-all duration-200 active:scale-[0.98]"
             >
-              Browse Services
+              Browse Product Catalog
             </button>
           </div>
         ) : (
           <div className="grid gap-8 lg:grid-cols-5">
-            {/* Billing Form */}
             <div className="lg:col-span-3">
               <div className="rounded-2xl border border-white/5 bg-[#0B0B0B] p-6 sm:p-8 shadow-xl">
-                <h2 className="font-display text-lg font-bold text-white mb-6">Billing Details</h2>
+                <h2 className="font-display text-lg font-bold text-white mb-1">Checkout</h2>
+                <p className="text-xs text-gray-500 font-mono mb-6">Complete your booking information</p>
 
                 <form onSubmit={handleProceedToPayment} className="space-y-5">
                   <div>
@@ -204,7 +208,6 @@ export default function CheckoutPage({ user, onNavigate, onOpenLogin }: Checkout
               </div>
             </div>
 
-            {/* Order Summary */}
             <div className="lg:col-span-2">
               <div className="rounded-2xl border border-white/5 bg-[#0B0B0B] p-6 sm:p-8 shadow-xl sticky top-28">
                 <h2 className="font-display text-lg font-bold text-white mb-6">Order Summary</h2>
