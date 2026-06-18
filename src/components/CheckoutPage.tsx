@@ -1,13 +1,11 @@
 import { useState, FormEvent } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, ShieldCheck, Loader2, Check, LogIn, ShoppingBag } from 'lucide-react';
-import { User, View } from '../types';
+import { ArrowLeft, ShieldCheck, Loader2, Check, ShoppingBag } from 'lucide-react';
+import { View } from '../types';
 import { PRODUCTS_DATA } from '../data';
 
 interface CheckoutPageProps {
-  user: User | null;
   onNavigate: (view: View) => void;
-  onOpenLogin: () => void;
 }
 
 function formatPrice(price: number): string {
@@ -24,7 +22,7 @@ function getServiceIdFromUrl(): string | null {
   return params.get('service');
 }
 
-export default function CheckoutPage({ user, onNavigate, onOpenLogin }: CheckoutPageProps) {
+export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   const [serviceId] = useState<string | null>(getServiceIdFromUrl);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -37,9 +35,7 @@ export default function CheckoutPage({ user, onNavigate, onOpenLogin }: Checkout
   const handleProceedToPayment = async (e: FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-
     await new Promise((r) => setTimeout(r, 2000));
-
     setIsProcessing(false);
     setIsSuccess(true);
     setTimeout(() => setIsSuccess(false), 4000);
@@ -65,35 +61,7 @@ export default function CheckoutPage({ user, onNavigate, onOpenLogin }: Checkout
           <span>Back to catalog</span>
         </button>
 
-        {!user ? (
-          <div className="rounded-2xl border border-white/5 bg-[#0B0B0B] p-12 text-center max-w-lg mx-auto">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 mb-4">
-              <LogIn className="h-6 w-6 text-indigo-400" />
-            </div>
-            <h2 className="font-display text-lg font-bold text-white mb-2">Sign in to Continue</h2>
-            <p className="text-xs text-gray-400 mb-6 max-w-xs mx-auto leading-relaxed">
-              Please authenticate your partner account to proceed with booking and secure checkout.
-            </p>
-            <button
-              onClick={onOpenLogin}
-              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 px-6 py-3 text-xs font-semibold text-white shadow-lg shadow-indigo-500/10 transition-all duration-200 active:scale-[0.98]"
-            >
-              <LogIn className="h-4 w-4" />
-              Sign In to Checkout
-            </button>
-            <div className="mt-4">
-              <button
-                onClick={() => {
-                  window.history.pushState({}, '', '/services');
-                  onNavigate('services');
-                }}
-                className="text-xs text-gray-500 hover:text-white transition-colors font-mono"
-              >
-                Return to catalog
-              </button>
-            </div>
-          </div>
-        ) : !product ? (
+        {!product ? (
           <div className="rounded-2xl border border-white/5 bg-[#0B0B0B] p-12 text-center max-w-lg mx-auto">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 mb-4">
               <ShoppingBag className="h-6 w-6 text-gray-500" />
@@ -127,7 +95,6 @@ export default function CheckoutPage({ user, onNavigate, onOpenLogin }: Checkout
                     <input
                       type="text"
                       required
-                      defaultValue={user?.name || ''}
                       placeholder="Shubham Yadav"
                       className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
                     />
@@ -140,7 +107,6 @@ export default function CheckoutPage({ user, onNavigate, onOpenLogin }: Checkout
                     <input
                       type="email"
                       required
-                      defaultValue={user?.email || ''}
                       placeholder="partner@company.com"
                       className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
                     />

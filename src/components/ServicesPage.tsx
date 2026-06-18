@@ -12,14 +12,12 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 import type { ElementType } from 'react';
-import { User, View } from '../types';
+import { View } from '../types';
 import { PRODUCTS_DATA } from '../data';
 
 interface ServicesPageProps {
-  user: User | null;
   onNavigate: (view: View) => void;
   onNavigateToCheckout: (serviceId: string) => void;
-  onOpenLogin: () => void;
 }
 
 const iconMap: Record<string, ElementType> = {
@@ -41,7 +39,7 @@ function formatPrice(price: number): string {
   }).format(price);
 }
 
-export default function ServicesPage({ user, onNavigate, onNavigateToCheckout, onOpenLogin }: ServicesPageProps) {
+export default function ServicesPage({ onNavigate, onNavigateToCheckout }: ServicesPageProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -123,14 +121,7 @@ export default function ServicesPage({ user, onNavigate, onNavigateToCheckout, o
                   </div>
 
                   <button
-                    onClick={() => {
-                      if (!user) {
-                        sessionStorage.setItem('mavrick_pending_checkout', product.id);
-                        onOpenLogin();
-                      } else {
-                        onNavigateToCheckout(product.id);
-                      }
-                    }}
+                    onClick={() => onNavigateToCheckout(product.id)}
                     className="group/btn inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white px-4 py-2.5 shadow-lg shadow-indigo-500/10 transition-all duration-200 active:scale-[0.98]"
                   >
                     Proceed to Booking

@@ -86,15 +86,7 @@ export default function App() {
     }
     showToast(`Access Granted. Welcome back, ${user.name}.`, 'success', 3500);
     setIsLoginModalOpen(false);
-
-    // Redirect to checkout if user had a pending booking
-    const pendingService = sessionStorage.getItem('mavrick_pending_checkout');
-    if (pendingService) {
-      sessionStorage.removeItem('mavrick_pending_checkout');
-      handleNavigateToCheckout(pendingService);
-    } else {
-      setCurrentView('dashboard');
-    }
+    setCurrentView('dashboard');
   };
 
   const handleLogout = async () => {
@@ -191,10 +183,8 @@ export default function App() {
               transition={{ duration: 0.4 }}
             >
               <ServicesPage
-                user={user}
                 onNavigate={handleNavigate}
                 onNavigateToCheckout={handleNavigateToCheckout}
-                onOpenLogin={openLogin}
               />
             </motion.div>
           )}
@@ -208,9 +198,7 @@ export default function App() {
               transition={{ duration: 0.4 }}
             >
               <CheckoutPage
-                user={user}
                 onNavigate={handleNavigate}
-                onOpenLogin={openLogin}
               />
             </motion.div>
           )}
