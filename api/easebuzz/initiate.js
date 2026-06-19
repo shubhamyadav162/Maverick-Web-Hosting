@@ -1,75 +1,36 @@
 /**
  * Easebuzz Payment Initiation Proxy
  * 
- * Receives payment initiation request from AcceptPay VPS,
- * forwards to Easebuzz API with whitelisted domain Origin header.
+ * PURE RELAY — just forwards VPS request to Easebuzz with whitelisted Origin header.
+ * No Easebuzz credentials stored here. VPS sends everything.
+ * Same pattern as Razorpay Netlify proxy.
  * 
  * POST /api/easebuzz/initiate
- * Body: { txnid, amount, productinfo, firstname, email, phone, udf1-udf5, hash }
- * Returns: Easebuzz SUVA response with qr_link (raw UPI string)
+ * Body: whatever VPS sends (form-urlencoded or JSON)
+ * Adds: Origin + Referer headers from maverickwebdav.vercel.app
  */
 
 const https = require('https');
 
 const EASEBUZZ_API_URL = 'https://pay.easebuzz.in/payment/initiateLink';
-const VPS_BACKEND = process.env.VPS_BACKEND_URL || 'http://87.232.72.67';
-const PROXY_SECRET = process.env.EASEBUZZ_PROXY_SECRET || 'acceptpay_easebuzz_proxy_2026';
 
 module.exports = async function handler(req, res) {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Proxy-Secret');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    // Verify request came from our VPS
-    const proxySecret = req.headers['x-proxy-secret'];
-    if (proxySecret !== PROXY_SECRET) {
-      console.error('[EasebuzzProxy] Unauthorized request - invalid proxy secret');
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+    console.log('[EasebuzzProxy] Relaying payment initiation to Easebuzz');
 
-    const { txnid, amount, productinfo, firstname, email, phone, udf1, udf2, udf3, udf4, udf5, hash } = req.body;
-
-    if (!txnid || !amount || !hash) {
-      return res.status(400).json({ error: 'Missing required fields: txnid, amount, hash' });
-    }
-
-    console.log(`[EasebuzzProxy] Initiating payment: txnid=${txnid}, amount=${amount}`);
-
-    // Build form body for Easebuzz
-    const postData = {
-      key: process.env.EASEBUZZ_API_KEY,
-      txnid,
-      amount: amount.toString(),
-      productinfo: productinfo || 'Payment',
-      firstname: firstname || 'Customer',
-      email: email || 'customer@acceptpay.in',
-      phone: phone || '9999999999',
-      surl: 'https://maverickwebdav.vercel.app/api/easebuzz/callback',
-      furl: 'https://maverickwebdav.vercel.app/api/easebuzz/callback',
-      hash,
-      payment_mode: 'UPI',
-      upi_qr: 'true',
-      request_mode: 'SUVA',
-      udf1: udf1 || '',
-      udf2: udf2 || '',
-      udf3: udf3 || '',
-      udf4: udf4 || '',
-      udf5: udf5 || ''
-    };
-
-    const body = Object.entries(postData)
-      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-      .join('&');
+    // VPS sends raw form body or JSON — forward as-is
+    const rawBody = typeof req.body === 'string'
+      ? req.body
+      : (req.headers['content-type']?.includes('json')
+        ? JSON.stringify(req.body)
+        : Object.entries(req.body || {}).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&'));
 
     // Forward to Easebuzz with whitelisted domain headers
     const easebuzzResponse = await new Promise((resolve, reject) => {
@@ -80,8 +41,8 @@ module.exports = async function handler(req, res) {
         path: url.pathname,
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': Buffer.byteLength(body),
+          'Content-Type': req.headers['content-type'] || 'application/x-www-form-urlencoded',
+          'Content-Length': Buffer.byteLength(rawBody),
           'Origin': 'https://maverickwebdav.vercel.app',
           'Referer': 'https://maverickwebdav.vercel.app/',
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 MaverickPay/1.0'
@@ -89,26 +50,22 @@ module.exports = async function handler(req, res) {
         timeout: 15000
       };
 
-      const req = https.request(options, (response) => {
+      const proxyReq = https.request(options, (response) => {
         let data = '';
         response.on('data', chunk => { data += chunk; });
         response.on('end', () => {
-          try {
-            resolve(JSON.parse(data));
-          } catch (e) {
-            reject(new Error(`Easebuzz response parse error: ${data.substring(0, 200)}`));
-          }
+          try { resolve(JSON.parse(data)); }
+          catch (e) { reject(new Error(`Easebuzz response parse: ${data.substring(0, 200)}`)); }
         });
       });
 
-      req.on('error', reject);
-      req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });
-      req.write(body);
-      req.end();
+      proxyReq.on('error', reject);
+      proxyReq.on('timeout', () => { proxyReq.destroy(); reject(new Error('Timeout')); });
+      proxyReq.write(rawBody);
+      proxyReq.end();
     });
 
     console.log(`[EasebuzzProxy] Response: status=${easebuzzResponse.status}, hasQrLink=${!!easebuzzResponse.qr_link}`);
-
     return res.status(200).json(easebuzzResponse);
 
   } catch (error) {
