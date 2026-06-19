@@ -1,19 +1,13 @@
 /**
  * Easebuzz Webhook Proxy
- * 
- * PURE RELAY — just forwards Easebuzz webhook to VPS.
- * No Easebuzz credentials stored here.
- * Same pattern as Razorpay Netlify proxy.
- * 
- * POST /api/easebuzz/webhook
- * Forwards raw body → VPS: POST http://87.232.72.67/api/v1/payment/webhook/easebuzz
+ * PURE RELAY — forwards Easebuzz webhook to VPS. No credentials stored here.
  */
 
-const http = require('http');
+import http from 'http';
 
 const VPS_WEBHOOK_URL = process.env.VPS_WEBHOOK_URL || 'http://87.232.72.67/api/v1/payment/webhook/easebuzz';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -22,7 +16,6 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    // Get raw body
     const rawBody = typeof req.body === 'string'
       ? req.body
       : new URLSearchParams(req.body).toString();
@@ -30,7 +23,6 @@ module.exports = async function handler(req, res) {
     const params = new URLSearchParams(rawBody);
     console.log(`[EasebuzzWebhookProxy] Relaying: txnid=${params.get('txnid')}, status=${params.get('status')}`);
 
-    // Forward to VPS
     const vpsResponse = await new Promise((resolve, reject) => {
       const url = new URL(VPS_WEBHOOK_URL);
       const options = {
@@ -66,4 +58,4 @@ module.exports = async function handler(req, res) {
     console.error('[EasebuzzWebhookProxy] Error:', error.message);
     return res.status(200).json({ status: 'acknowledged' });
   }
-};
+}

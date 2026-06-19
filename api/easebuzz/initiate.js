@@ -1,20 +1,14 @@
 /**
  * Easebuzz Payment Initiation Proxy
- * 
- * PURE RELAY — just forwards VPS request to Easebuzz with whitelisted Origin header.
- * No Easebuzz credentials stored here. VPS sends everything.
- * Same pattern as Razorpay Netlify proxy.
- * 
- * POST /api/easebuzz/initiate
- * Body: whatever VPS sends (form-urlencoded or JSON)
- * Adds: Origin + Referer headers from maverickwebdav.vercel.app
+ * PURE RELAY — forwards VPS request to Easebuzz with whitelisted Origin header.
+ * No credentials stored here.
  */
 
-const https = require('https');
+import https from 'https';
 
 const EASEBUZZ_API_URL = 'https://pay.easebuzz.in/payment/initiateLink';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -25,14 +19,15 @@ module.exports = async function handler(req, res) {
   try {
     console.log('[EasebuzzProxy] Relaying payment initiation to Easebuzz');
 
-    // VPS sends raw form body or JSON — forward as-is
-    const rawBody = typeof req.body === 'string'
-      ? req.body
-      : (req.headers['content-type']?.includes('json')
-        ? JSON.stringify(req.body)
-        : Object.entries(req.body || {}).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&'));
+    let rawBody;
+    if (typeof req.body === 'string') {
+      rawBody = req.body;
+    } else if (req.headers['content-type']?.includes('json')) {
+      rawBody = JSON.stringify(req.body);
+    } else {
+      rawBody = Object.entries(req.body || {}).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
+    }
 
-    // Forward to Easebuzz with whitelisted domain headers
     const easebuzzResponse = await new Promise((resolve, reject) => {
       const url = new URL(EASEBUZZ_API_URL);
       const options = {
@@ -72,4 +67,4 @@ module.exports = async function handler(req, res) {
     console.error('[EasebuzzProxy] Error:', error.message);
     return res.status(500).json({ error: error.message || 'Proxy error' });
   }
-};
+}
