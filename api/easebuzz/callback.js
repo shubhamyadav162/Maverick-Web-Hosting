@@ -52,9 +52,9 @@ export default async function handler(req, res) {
 
     console.log(`[EasebuzzCallback] txnid=${txnid}, status=${status}, acceptPayTxnId=${acceptPayTxnId}`);
 
-    const rawBody = typeof req.body === 'string'
+    const rawBody = typeof req.body === 'string' && req.body.length > 0
       ? req.body
-      : new URLSearchParams(req.body || {}).toString();
+      : new URLSearchParams(data || {}).toString();
 
     // Forward to VPS to update transaction status (awaiting completion)
     await forwardToVPS(rawBody);
