@@ -64,12 +64,23 @@ export default function Footer({ onNavigate }: FooterProps) {
               <li>
                 <button
                   onClick={() => {
-                    onNavigate('services');
+                    onNavigate('products');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   className="text-gray-400 hover:text-white transition-colors text-left font-semibold"
                 >
-                  Product Catalog
+                  Digital Products
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
+                    onNavigate('services');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="text-gray-400 hover:text-white transition-colors text-left"
+                >
+                  Services Catalog
                 </button>
               </li>
               <li>
@@ -198,10 +209,14 @@ export default function Footer({ onNavigate }: FooterProps) {
             </div>
             <p>© {new Date().getFullYear()} Maverick Enterprises. All Rights Reserved.</p>
           </div>
-          <div className="flex justify-start md:justify-end gap-3 text-xs text-gray-500">
+          <div className="flex flex-col sm:flex-row justify-start md:justify-end gap-3 text-xs text-gray-500">
             <span className="flex items-center gap-1">
               <Shield className="h-3.5 w-3.5 text-indigo-500/70" />
               100% Cryptographic Billing & Secure Processing
+            </span>
+            <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+              <Shield className="h-3.5 w-3.5" />
+              Powered by Easebuzz
             </span>
           </div>
         </div>

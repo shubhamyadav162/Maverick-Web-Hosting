@@ -72,9 +72,9 @@ export default function Header({ currentView, onNavigate, user, onLogout, onOpen
               Home
             </button>
             <button
-              onClick={() => handleLinkClick('services')}
+              onClick={() => handleLinkClick('products')}
               className={`text-sm font-semibold transition-colors hover:text-white ${
-                currentView === 'services' ? 'text-white' : 'text-gray-400'
+                currentView === 'products' ? 'text-white' : 'text-gray-400'
               }`}
             >
               Products
@@ -229,9 +229,9 @@ export default function Header({ currentView, onNavigate, user, onLogout, onOpen
                 Home
               </button>
               <button
-                onClick={() => handleLinkClick('services')}
+                onClick={() => handleLinkClick('products')}
                 className={`block w-full rounded-lg px-3 py-2 text-left text-base font-semibold ${
-                  currentView === 'services' ? 'bg-white/10 text-white' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                  currentView === 'products' ? 'bg-white/10 text-white' : 'text-gray-400 hover:bg-white/5 hover:text-white'
                 }`}
               >
                 Products

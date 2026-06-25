@@ -1,5 +1,50 @@
 import { ServiceItem, ServiceProduct } from './types';
 
+export const DIGITAL_PRODUCTS_DATA: ServiceProduct[] = [
+  {
+    id: 'starter-template-300',
+    title: 'Starter Website Template',
+    tagline: 'Ready-to-deploy HTML/CSS layout',
+    description: 'A clean, responsive HTML/CSS website template perfect for freelancers, small businesses, or personal portfolios. Includes 3 pages, mobile-friendly layout, and fast-loading code.',
+    deliverables: [
+      'Responsive 3-page HTML/CSS template',
+      'Mobile-first layout structure',
+      'Contact form integration',
+      'Basic SEO meta tags setup',
+    ],
+    price: 300,
+    iconName: 'Layout',
+  },
+  {
+    id: 'ui-component-kit-400',
+    title: 'Premium UI Component Kit',
+    tagline: 'React reusable component library',
+    description: 'A collection of 20+ premium React components with Tailwind CSS styling. Buttons, cards, modals, navigation bars, and form elements ready to copy-paste into your project.',
+    deliverables: [
+      '20+ reusable React components',
+      'Tailwind CSS styled & responsive',
+      'Dark & light mode variants',
+      'Storybook documentation included',
+    ],
+    price: 400,
+    iconName: 'Box',
+  },
+  {
+    id: 'landing-page-500',
+    title: 'Full Landing Page Package',
+    tagline: 'Complete marketing page with source',
+    description: 'A complete, production-ready landing page built with React and Tailwind CSS. Hero section, features grid, testimonial carousel, pricing table, and footer — fully customizable.',
+    deliverables: [
+      'Complete React landing page',
+      'Hero, features, testimonials sections',
+      'Pricing table & CTA components',
+      'Deployment-ready build config',
+    ],
+    price: 500,
+    iconName: 'Globe',
+  },
+];
+
 export const COMPLIANCE_DATA = {
   agencyName: "Mavrick Web Development",
   parentCompany: "Maverick Enterprises",

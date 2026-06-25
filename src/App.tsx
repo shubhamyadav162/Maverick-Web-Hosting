@@ -10,11 +10,13 @@ import FeaturedProjects from './components/FeaturedProjects';
 import Configurator from './components/Configurator';
 import F_A_Q from './components/Faq';
 import Testimonials from './components/Testimonials';
+import PaymentTrustBar from './components/PaymentTrustBar';
 import LegalPage from './components/LegalPage';
 import LoginModal from './components/LoginModal';
 import Dashboard from './components/Dashboard';
 import ContactPage from './components/ContactPage';
 import ServicesPage from './components/ServicesPage';
+import ProductsPage from './components/ProductsPage';
 import CheckoutPage from './components/CheckoutPage';
 import AuthCallback from './pages/AuthCallback';
 import { useToast } from './context/ToastContext';
@@ -26,6 +28,7 @@ const PATH_TO_VIEW: Record<string, View> = {
   '/refund': 'refund',
   '/contact': 'contact',
   '/services': 'services',
+  '/products': 'products',
   '/checkout': 'checkout',
   '/dashboard': 'dashboard',
 };
@@ -37,6 +40,7 @@ const VIEW_TO_PATH: Record<View, string> = {
   refund: '/refund',
   contact: '/contact',
   services: '/services',
+  products: '/products',
   checkout: '/checkout',
   dashboard: '/dashboard',
 };
@@ -154,6 +158,7 @@ export default function App() {
                   }
                 }}
               />
+              <PaymentTrustBar />
               <Services onStartProject={handleInitiateConsultation} />
               <FeaturedProjects />
               <Testimonials />
@@ -171,6 +176,18 @@ export default function App() {
               transition={{ duration: 0.4 }}
             >
               <ContactPage onNavigate={handleNavigate} />
+            </motion.div>
+          )}
+
+          {currentView === 'products' && (
+            <motion.div
+              key="products-view"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <ProductsPage onNavigate={handleNavigate} />
             </motion.div>
           )}
 

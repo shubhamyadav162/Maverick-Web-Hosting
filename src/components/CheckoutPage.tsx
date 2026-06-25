@@ -1,8 +1,8 @@
 import { useState, FormEvent } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, ShieldCheck, Loader2, Check, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Loader2, Check, ShoppingBag, Wallet } from 'lucide-react';
 import { View } from '../types';
-import { PRODUCTS_DATA } from '../data';
+import { PRODUCTS_DATA, DIGITAL_PRODUCTS_DATA } from '../data';
 
 interface CheckoutPageProps {
   onNavigate: (view: View) => void;
@@ -27,7 +27,7 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const product = PRODUCTS_DATA.find((p) => p.id === serviceId);
+  const product = PRODUCTS_DATA.find((p) => p.id === serviceId) || DIGITAL_PRODUCTS_DATA.find((p) => p.id === serviceId);
   const basePrice = product?.price || 0;
   const gstAmount = Math.round(basePrice * 0.18);
   const totalPayable = basePrice + gstAmount;
@@ -226,6 +226,15 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                 <div className="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-[10px] font-mono text-gray-600">
                   <ShieldCheck className="h-3.5 w-3.5 text-indigo-400" />
                   <span>Secured via 256-bit SSL encryption</span>
+                </div>
+                <div className="mt-3 rounded-xl border border-emerald-500/10 bg-emerald-500/5 p-3">
+                  <div className="flex items-center gap-2">
+                    <Wallet className="h-3.5 w-3.5 text-emerald-400" />
+                    <span className="text-[10px] font-mono font-semibold text-emerald-400 uppercase tracking-wider">Easebuzz Secure Pay</span>
+                  </div>
+                  <p className="mt-1 text-[10px] text-gray-500 leading-relaxed">
+                    Payments processed via Easebuzz — RBI-approved payment gateway. Supports UPI, Credit/Debit Cards, and Net Banking.
+                  </p>
                 </div>
               </div>
             </div>
