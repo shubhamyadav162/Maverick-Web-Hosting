@@ -82,6 +82,19 @@ export default function App() {
     document.documentElement.classList.remove('light');
   }, []);
 
+  // Display toast notification for payment redirect status
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('status');
+    if (status === 'success') {
+      showToast('Payment successful! Your custom service booking has been confirmed.', 'success', 5000);
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (status === 'failed') {
+      showToast('Payment unsuccessful or cancelled. Please try again.', 'error', 5000);
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [showToast]);
+
   const handleLoginSuccess = (user: User, rememberMe = true) => {
     if (rememberMe) {
       localStorage.setItem('mavrick_partner_user', JSON.stringify(user));

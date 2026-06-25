@@ -35,6 +35,20 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   const gstAmount = Math.round(basePrice * 0.18);
   const totalPayable = basePrice + gstAmount;
 
+  const loadEasebuzzSDK = (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if ((window as any).EasebuzzCheckout) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://seamless.easebuzz.in/images/v1/easebuzz-checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handleProceedToPayment = async (e: FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
@@ -43,25 +57,45 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
     try {
       const payload = {
         amount: totalPayable,
-        mobile: phone,
+        phone,
         email,
-        billId: 'INV_' + Date.now(),
-        customerName: name,
-        description: product?.title || 'Digital Product',
+        firstname: name,
+        productinfo: product?.title || 'Digital Product',
       };
 
-      const res = await fetch('http://87.232.72.67/api/v1/transaction/initiate-transaction', {
+      const res = await fetch('/api/easebuzz/pay-checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-api-key': 'em_live_450bd31a25eda9576c021ffc3f702773', 'x-api-secret': 'e5be1e9524c2c9eae5ef926ec4693dcfb00b9fe4f1ba6cb0' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
       const data = await res.json();
-      if (data.status === 'success' && data.data?._id) {
-        const payUrl = `https://acceptpayfrontend.vercel.app/pay/${data.data._id}`;
-        window.location.href = payUrl;
+      if (data.status === 'success' && data.access_key) {
+        const sdkLoaded = await loadEasebuzzSDK();
+        
+        if (sdkLoaded && (window as any).EasebuzzCheckout) {
+          const easebuzzCheckout = new (window as any).EasebuzzCheckout(data.key, 'prod');
+          const options = {
+            access_key: data.access_key,
+            onResponse: (response: any) => {
+              console.log('Easebuzz SDK response:', response);
+              if (response.status === 'success') {
+                window.history.pushState({}, '', '/services?status=success');
+                onNavigate('services');
+              } else {
+                window.history.pushState({}, '', '/services?status=failed');
+                onNavigate('services');
+              }
+            }
+          };
+          easebuzzCheckout.initiatePayment(options);
+        } else {
+          // Fallback to hosted checkout page redirect
+          console.warn('Easebuzz SDK failed to load, redirecting to hosted checkout.');
+          window.location.href = `https://pay.easebuzz.in/pay/${data.access_key}`;
+        }
       } else {
-        setIsError(data.message || 'Payment initiation failed');
+        setIsError(data.message || data.error || 'Payment initiation failed');
       }
     } catch (err: any) {
       setIsError('Network error: ' + err.message);

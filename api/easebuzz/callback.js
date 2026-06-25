@@ -16,14 +16,14 @@ export default async function handler(req, res) {
     console.log(`[EasebuzzCallback] txnid=${txnid}, status=${status}`);
 
     if (status === 'success') {
-      const successUrl = acceptPayTxnId 
+      const successUrl = acceptPayTxnId && acceptPayTxnId !== 'maverick'
         ? `https://acceptpayfrontend.vercel.app/pay/${acceptPayTxnId}?status=success`
-        : 'https://acceptpayfrontend.vercel.app/?status=success';
+        : 'https://maverickwebdav.vercel.app/services?status=success';
       return res.redirect(302, successUrl);
     } else {
-      const failUrl = acceptPayTxnId 
+      const failUrl = acceptPayTxnId && acceptPayTxnId !== 'maverick'
         ? `https://acceptpayfrontend.vercel.app/pay/${acceptPayTxnId}?status=failed&error=${encodeURIComponent(error_message)}`
-        : 'https://acceptpayfrontend.vercel.app/?status=failed';
+        : 'https://maverickwebdav.vercel.app/services?status=failed';
       return res.redirect(302, failUrl);
     }
 
