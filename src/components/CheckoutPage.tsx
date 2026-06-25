@@ -35,9 +35,7 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   const [pincode, setPincode] = useState('');
 
   const product = PRODUCTS_DATA.find((p) => p.id === serviceId) || DIGITAL_PRODUCTS_DATA.find((p) => p.id === serviceId);
-  const basePrice = product?.price || 0;
-  const gstAmount = Math.round(basePrice * 0.18);
-  const totalPayable = basePrice + gstAmount;
+  const totalPayable = product?.price || 0;
 
   const loadEasebuzzSDK = (): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -302,14 +300,6 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                   </div>
 
                   <div className="space-y-2 text-xs">
-                    <div className="flex items-center justify-between text-gray-400">
-                      <span>Base Price</span>
-                      <span className="text-white font-medium">{formatPrice(basePrice)}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-gray-400">
-                      <span>GST @18%</span>
-                      <span className="text-white font-medium">{formatPrice(gstAmount)}</span>
-                    </div>
                     <div className="border-t border-white/5 pt-2 flex items-center justify-between">
                       <span className="font-semibold text-white">Total Payable</span>
                       <span className="font-bold text-white text-base font-display">

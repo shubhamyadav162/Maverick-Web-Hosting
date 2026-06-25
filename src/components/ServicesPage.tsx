@@ -10,6 +10,7 @@ import {
   ShoppingCart,
   Server,
   ArrowUpRight,
+  Cpu,
 } from 'lucide-react';
 import type { ElementType } from 'react';
 import { View } from '../types';
@@ -29,6 +30,7 @@ const iconMap: Record<string, ElementType> = {
   Box,
   ShoppingCart,
   Server,
+  Cpu,
 };
 
 function formatPrice(price: number): string {
@@ -117,7 +119,7 @@ export default function ServicesPage({ onNavigate, onNavigateToCheckout }: Servi
                     <span className="text-lg font-bold text-white font-display">
                       {formatPrice(product.price)}
                     </span>
-                    <span className="text-[10px] text-gray-500 font-mono">+ GST</span>
+                    <span className="text-[10px] text-emerald-400 font-mono">GST Incl.</span>
                   </div>
 
                   <button
@@ -134,7 +136,7 @@ export default function ServicesPage({ onNavigate, onNavigateToCheckout }: Servi
         </div>
 
         <div className="mt-16 text-center text-xs font-mono text-gray-600 border-t border-white/5 pt-8">
-          <p>All prices are in INR (₹). GST @18% will be applied at checkout.</p>
+          <p>All prices are inclusive of GST. No hidden charges.</p>
           <p className="mt-1">Mavrick Web Development • Maverick Enterprises</p>
         </div>
       </div>
