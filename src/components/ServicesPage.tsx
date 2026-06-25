@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import type { ElementType } from 'react';
 import { View } from '../types';
-import { PRODUCTS_DATA } from '../data';
+import { PRODUCTS_DATA, DIGITAL_PRODUCTS_DATA } from '../data';
 
 interface ServicesPageProps {
   onNavigate: (view: View) => void;
@@ -77,7 +77,7 @@ export default function ServicesPage({ onNavigate, onNavigateToCheckout }: Servi
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {PRODUCTS_DATA.map((product, idx) => {
+          {[...DIGITAL_PRODUCTS_DATA, ...PRODUCTS_DATA].map((product, idx) => {
             const Icon = iconMap[product.iconName] || Box;
             return (
               <motion.div
