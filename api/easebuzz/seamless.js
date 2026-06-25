@@ -1,13 +1,9 @@
 /**
- * Easebuzz Payment Initiation Proxy
- * PURE RELAY — forwards VPS request to Easebuzz with whitelisted Origin header.
- * No credentials stored here.
+ * Easebuzz Seamless Payment Proxy
+ * Relays Step 2 request (UPI/SUVA details) to Easebuzz.
  */
 
 import https from 'https';
-
-// EASEBUZZ_API_URL will be constructed dynamically based on env
-
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -18,7 +14,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    console.log('[EasebuzzProxy] Relaying payment initiation to Easebuzz');
+    console.log('[EasebuzzSeamlessProxy] Relaying seamless payment to Easebuzz');
 
     let rawBody;
     if (typeof req.body === 'string') {
@@ -29,14 +25,15 @@ export default async function handler(req, res) {
       rawBody = Object.entries(req.body || {}).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
     }
 
+    // Determine target URL based on query parameter or body
     const env = req.query.env || req.body.env || 'production';
     const baseUrl = env === 'test' 
       ? 'https://testpay.easebuzz.in' 
       : 'https://pay.easebuzz.in';
-    const EASEBUZZ_API_URL = `${baseUrl}/payment/initiateLink`;
+    const EASEBUZZ_SEAMLESS_URL = `${baseUrl}/initiate_seamless_payment/`;
 
     const easebuzzResponse = await new Promise((resolve, reject) => {
-      const url = new URL(EASEBUZZ_API_URL);
+      const url = new URL(EASEBUZZ_SEAMLESS_URL);
       const options = {
         hostname: url.hostname,
         port: 443,
@@ -56,8 +53,11 @@ export default async function handler(req, res) {
         let data = '';
         response.on('data', chunk => { data += chunk; });
         response.on('end', () => {
-          try { resolve(JSON.parse(data)); }
-          catch (e) { reject(new Error(`Easebuzz response parse: ${data.substring(0, 200)}`)); }
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            reject(new Error(`Easebuzz response parse error: ${data.substring(0, 200)}`));
+          }
         });
       });
 
@@ -67,11 +67,11 @@ export default async function handler(req, res) {
       proxyReq.end();
     });
 
-    console.log(`[EasebuzzProxy] Response: status=${easebuzzResponse.status}, hasQrLink=${!!easebuzzResponse.qr_link}`);
+    console.log(`[EasebuzzSeamlessProxy] Response: status=${easebuzzResponse.status}, hasQrLink=${!!easebuzzResponse.qr_link}`);
     return res.status(200).json(easebuzzResponse);
 
   } catch (error) {
-    console.error('[EasebuzzProxy] Error:', error.message);
+    console.error('[EasebuzzSeamlessProxy] Error:', error.message);
     return res.status(500).json({ error: error.message || 'Proxy error' });
   }
 }
