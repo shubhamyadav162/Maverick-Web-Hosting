@@ -56,8 +56,8 @@ export default async function handler(req, res) {
       ? req.body
       : new URLSearchParams(req.body || {}).toString();
 
-    // Forward to VPS to update transaction status (non-blocking)
-    forwardToVPS(rawBody);
+    // Forward to VPS to update transaction status (awaiting completion)
+    await forwardToVPS(rawBody);
 
     if (status === 'success') {
       const successUrl = acceptPayTxnId && acceptPayTxnId !== 'maverick'
