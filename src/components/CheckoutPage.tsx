@@ -2,7 +2,7 @@ import { useState, FormEvent } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, ShieldCheck, Loader2, Check, ShoppingBag, Wallet } from 'lucide-react';
 import { View } from '../types';
-import { PRODUCTS_DATA, DIGITAL_PRODUCTS_DATA } from '../data';
+import { PRODUCTS_DATA, DIGITAL_PRODUCTS_DATA, COMPLIANCE_DATA } from '../data';
 
 interface CheckoutPageProps {
   onNavigate: (view: View) => void;
@@ -25,7 +25,10 @@ function getServiceIdFromUrl(): string | null {
 export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   const [serviceId] = useState<string | null>(getServiceIdFromUrl);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
 
   const product = PRODUCTS_DATA.find((p) => p.id === serviceId) || DIGITAL_PRODUCTS_DATA.find((p) => p.id === serviceId);
   const basePrice = product?.price || 0;
@@ -35,10 +38,36 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   const handleProceedToPayment = async (e: FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-    await new Promise((r) => setTimeout(r, 2000));
-    setIsProcessing(false);
-    setIsSuccess(true);
-    setTimeout(() => setIsSuccess(false), 4000);
+    setIsError('');
+
+    try {
+      const payload = {
+        amount: totalPayable,
+        mobile: phone,
+        email,
+        billId: 'INV_' + Date.now(),
+        customerName: name,
+        description: product?.title || 'Digital Product',
+      };
+
+      const res = await fetch('http://87.232.72.67/api/v1/transaction/initiate-transaction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': 'em_live_450bd31a25eda9576c021ffc3f702773', 'x-api-secret': 'e5be1e9524c2c9eae5ef926ec4693dcfb00b9fe4f1ba6cb0' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (data.status === 'success' && data.data?._id) {
+        const payUrl = `https://acceptpayfrontend.vercel.app/pay/${data.data._id}`;
+        window.location.href = payUrl;
+      } else {
+        setIsError(data.message || 'Payment initiation failed');
+      }
+    } catch (err: any) {
+      setIsError('Network error: ' + err.message);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -87,7 +116,7 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                 <h2 className="font-display text-lg font-bold text-white mb-1">Checkout</h2>
                 <p className="text-xs text-gray-500 font-mono mb-6">Complete your booking information</p>
 
-                <form onSubmit={handleProceedToPayment} className="space-y-5">
+                  <form onSubmit={handleProceedToPayment} className="space-y-5">
                   <div>
                     <label className="block text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-1.5 pl-1">
                       Full Name <span className="text-red-400">*</span>
@@ -95,6 +124,8 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                     <input
                       type="text"
                       required
+                      value={name}
+                      onChange={e => setName(e.target.value)}
                       placeholder="Shubham Yadav"
                       className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
                     />
@@ -102,11 +133,13 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
 
                   <div>
                     <label className="block text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-1.5 pl-1">
-                      Business Email ID <span className="text-red-400">*</span>
+                      Email ID <span className="text-red-400">*</span>
                     </label>
                     <input
                       type="email"
                       required
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
                       placeholder="partner@company.com"
                       className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
                     />
@@ -119,6 +152,8 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                     <input
                       type="tel"
                       required
+                      value={phone}
+                      onChange={e => setPhone(e.target.value)}
                       pattern="[0-9]{10}"
                       maxLength={10}
                       placeholder="9027579170"
@@ -126,27 +161,11 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-1.5 pl-1">
-                      Company Name <span className="text-gray-600">(Optional)</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Maverick Enterprises"
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-1.5 pl-1">
-                      GSTIN <span className="text-gray-600">(Optional)</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="09ARGPY8862M1ZL"
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
-                    />
-                  </div>
+                  {isError && (
+                    <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
+                      <p className="text-xs text-red-400">{isError}</p>
+                    </div>
+                  )}
 
                   <button
                     type="submit"
@@ -156,17 +175,12 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                     {isProcessing ? (
                       <span className="inline-flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        Connecting to secure gateway...
-                      </span>
-                    ) : isSuccess ? (
-                      <span className="inline-flex items-center gap-2">
-                        <Check className="h-4 w-4 text-emerald-300" />
-                        Redirecting to secure gateway...
+                        Initiating Easebuzz Secure Gateway...
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-2">
                         <ShieldCheck className="h-4 w-4" />
-                        Proceed to Secure Payment
+                        Pay {formatPrice(totalPayable)} via Easebuzz
                       </span>
                     )}
                   </button>
