@@ -1,8 +1,8 @@
 import https from 'https';
 import crypto from 'crypto';
 
-const EASYMARVEL_KEY = 'em_live_450bd31a25eda9576c021ffc3f702773';
-const EASYMARVEL_SALT = 'e5be1e9524c2c9eae5ef926ec4693dcfb00b9fe4f1ba6cb0';
+const EASYMARVEL_KEY = 'U6MU08B6XB';
+const EASYMARVEL_SALT = '6TAOVKCEY7';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
