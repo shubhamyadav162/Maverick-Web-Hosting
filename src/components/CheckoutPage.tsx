@@ -29,6 +29,10 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [stateVal, setStateVal] = useState('');
+  const [pincode, setPincode] = useState('');
 
   const product = PRODUCTS_DATA.find((p) => p.id === serviceId) || DIGITAL_PRODUCTS_DATA.find((p) => p.id === serviceId);
   const basePrice = product?.price || 0;
@@ -61,6 +65,10 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
         email,
         firstname: name,
         productinfo: product?.title || 'Digital Product',
+        address,
+        city,
+        state: stateVal,
+        pincode
       };
 
       const res = await fetch('/api/easebuzz/pay-checkout', {
@@ -193,6 +201,64 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                       placeholder="9027579170"
                       className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-1.5 pl-1">
+                      Billing Address <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={address}
+                      onChange={e => setAddress(e.target.value)}
+                      placeholder="Bukhara, Near Bakli Fatak"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="col-span-1">
+                      <label className="block text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-1.5 pl-1">
+                        City <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={city}
+                        onChange={e => setCity(e.target.value)}
+                        placeholder="Bijnor"
+                        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
+                      />
+                    </div>
+                    <div className="col-span-1">
+                      <label className="block text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-1.5 pl-1">
+                        State <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={stateVal}
+                        onChange={e => setStateVal(e.target.value)}
+                        placeholder="Uttar Pradesh"
+                        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
+                      />
+                    </div>
+                    <div className="col-span-1">
+                      <label className="block text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-1.5 pl-1">
+                        Pincode <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={pincode}
+                        onChange={e => setPincode(e.target.value)}
+                        pattern="[0-9]{6}"
+                        maxLength={6}
+                        placeholder="246701"
+                        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
+                      />
+                    </div>
                   </div>
 
                   {isError && (

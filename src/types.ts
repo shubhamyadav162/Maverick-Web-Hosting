@@ -1,4 +1,4 @@
-export type View = 'home' | 'terms' | 'privacy' | 'refund' | 'contact' | 'services' | 'checkout' | 'dashboard' | 'products';
+export type View = 'home' | 'terms' | 'privacy' | 'refund' | 'contact' | 'services' | 'checkout' | 'dashboard';
 
 export interface User {
   name: string;

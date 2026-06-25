@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { amount, firstname, email, phone, productinfo } = req.body;
+    const { amount, firstname, email, phone, productinfo, address, city, state, pincode } = req.body;
 
     if (!amount || !firstname || !email || !phone) {
       return res.status(400).json({ error: 'Missing required parameters' });
@@ -53,7 +53,12 @@ export default async function handler(req, res) {
       furl: 'https://maverickwebdav.vercel.app/api/easebuzz/callback',
       hash,
       udf1: 'maverick',
-      request_flow: 'SEAMLESS'
+      request_flow: 'SEAMLESS',
+      address1: address || '',
+      city: city || '',
+      state: state || '',
+      zipcode: pincode || '',
+      country: 'India'
     };
 
     const postData = new URLSearchParams(payload).toString();
