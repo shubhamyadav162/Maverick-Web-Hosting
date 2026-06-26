@@ -111,9 +111,12 @@ export default async function handler(req, res) {
       });
     } else {
       console.error(`[PayCheckout] Failed: ${JSON.stringify(easebuzzRes)}`);
+      const errMsg = easebuzzRes.error_desc || easebuzzRes.data || 'Payment gateway unavailable. Please try again.';
       return res.status(400).json({
         status: 'fail',
-        message: easebuzzRes.data || 'Failed to initiate payment link'
+        message: typeof errMsg === 'string' && errMsg.includes('blocked')
+          ? 'Payment gateway is temporarily unavailable. Please contact support.'
+          : errMsg
       });
     }
 
