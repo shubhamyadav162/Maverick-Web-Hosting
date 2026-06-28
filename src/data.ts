@@ -309,6 +309,62 @@ export const DIGITAL_PRODUCTS_DATA: ServiceProduct[] = [
     price: 1400,
     iconName: 'BarChart3',
   },
+  {
+    id: 'website-health-check-120',
+    title: 'Quick Website Health Check',
+    tagline: '5-minute diagnostic scan',
+    description: 'A rapid automated scan of your website checking SSL, responsiveness, broken links, and basic SEO signals. Delivered as a concise report with actionable fix recommendations.',
+    deliverables: [
+      'SSL & security headers scan',
+      'Broken link detection',
+      'Mobile responsiveness check',
+      'Actionable fix recommendations PDF',
+    ],
+    price: 120,
+    iconName: 'CheckCircle',
+  },
+  {
+    id: 'repo-setup-200',
+    title: 'GitHub Repository Setup & CI Pipeline',
+    tagline: 'Git repo + basic CI/CD',
+    description: 'Complete GitHub repository setup with branch protection rules, README boilerplate, issue templates, and a basic GitHub Actions CI pipeline running lint and test on every push.',
+    deliverables: [
+      'GitHub repo with branch protection',
+      'README, LICENSE & issue templates',
+      'GitHub Actions CI pipeline',
+      'Lint & test automation on push',
+    ],
+    price: 200,
+    iconName: 'GitBranch',
+  },
+  {
+    id: 'ssl-deploy-335',
+    title: 'SSL & Domain Deployment Setup',
+    tagline: 'Domain pointing + free SSL',
+    description: 'End-to-end domain DNS configuration, VPS or Vercel deployment, free SSL certificate provisioning via Let\'s Encrypt, and forced HTTPS redirect — all within 24 hours.',
+    deliverables: [
+      'DNS A/CNAME record configuration',
+      'Free SSL via Let\'s Encrypt',
+      'Forced HTTPS redirect setup',
+      'Deployment verification report',
+    ],
+    price: 335,
+    iconName: 'Shield',
+  },
+  {
+    id: 'custom-component-1970',
+    title: 'Custom Interactive Component',
+    tagline: 'Bespoke UI element build',
+    description: 'A fully custom, production-ready interactive UI component — be it an animated pricing calculator, dynamic data table, form wizard, or dashboard widget — built to your exact specs.',
+    deliverables: [
+      'Custom React/JS interactive component',
+      'Responsive design & animations',
+      'Props/config-driven interface',
+      'Integration documentation & usage guide',
+    ],
+    price: 1970,
+    iconName: 'Component',
+  },
 ];
 
 export const COMPLIANCE_DATA = {
