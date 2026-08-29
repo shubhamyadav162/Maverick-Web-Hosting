@@ -34,7 +34,7 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   const [stateVal, setStateVal] = useState('');
   const [pincode, setPincode] = useState('');
 
-  const [gateway, setGateway] = useState<'razorpay' | 'easebuzz'>('razorpay');
+  const [activeGateway, setActiveGateway] = useState<'razorpay' | 'easebuzz' | null>(null);
 
   const product = PRODUCTS_DATA.find((p) => p.id === serviceId) || DIGITAL_PRODUCTS_DATA.find((p) => p.id === serviceId);
   const totalPayable = product?.price || 0;
@@ -67,13 +67,18 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
     });
   };
 
-  const handleProceedToPayment = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleProceedWithGateway = async (selectedGateway: 'razorpay' | 'easebuzz') => {
+    if (!name || !email || !phone) {
+      setIsError('Please enter your Name, Email, and Mobile number first.');
+      return;
+    }
+
     setIsProcessing(true);
+    setActiveGateway(selectedGateway);
     setIsError('');
 
     try {
-      if (gateway === 'razorpay') {
+      if (selectedGateway === 'razorpay') {
         const orderRes = await fetch('/api/razorpay/orders', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -342,84 +347,59 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-2 pl-1">
-                      Select Payment Gateway <span className="text-red-400">*</span>
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div
-                        onClick={() => setGateway('razorpay')}
-                        className={`cursor-pointer rounded-xl border p-3.5 transition-all flex flex-col justify-between ${
-                          gateway === 'razorpay'
-                            ? 'border-indigo-500 bg-indigo-500/10 ring-1 ring-indigo-500/50 shadow-lg shadow-indigo-500/10'
-                            : 'border-white/10 bg-white/5 hover:border-white/20'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="font-semibold text-xs text-white flex items-center gap-1.5">
-                            <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse"></span>
-                            Razorpay Live
-                          </span>
-                          <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                            Fast & UPI
-                          </span>
-                        </div>
-                        <p className="text-[10px] text-gray-400">
-                          Instant UPI Intent, QR Code, Cards & NetBanking
-                        </p>
-                      </div>
-
-                      <div
-                        onClick={() => setGateway('easebuzz')}
-                        className={`cursor-pointer rounded-xl border p-3.5 transition-all flex flex-col justify-between ${
-                          gateway === 'easebuzz'
-                            ? 'border-emerald-500 bg-emerald-500/10 ring-1 ring-emerald-500/50 shadow-lg shadow-emerald-500/10'
-                            : 'border-white/10 bg-white/5 hover:border-white/20'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="font-semibold text-xs text-white flex items-center gap-1.5">
-                            <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
-                            Easebuzz Pay
-                          </span>
-                          <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                            RBI Approved
-                          </span>
-                        </div>
-                        <p className="text-[10px] text-gray-400">
-                          Easebuzz Hosted Gateway & Multi-option checkout
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
                   {isError && (
                     <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
                       <p className="text-xs text-red-400">{isError}</p>
                     </div>
                   )}
 
-                  <button
-                    type="submit"
-                    disabled={isProcessing}
-                    className={`group/btn relative w-full overflow-hidden rounded-xl px-6 py-3.5 text-xs font-semibold text-white shadow-lg transition-all duration-200 disabled:opacity-70 active:scale-[0.98] ${
-                      gateway === 'razorpay'
-                        ? 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/20'
-                        : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20'
-                    }`}
-                  >
-                    {isProcessing ? (
-                      <span className="inline-flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Initiating {gateway === 'razorpay' ? 'Razorpay' : 'Easebuzz'} Gateway...
+                  <div className="space-y-3 pt-2">
+                    <button
+                      type="button"
+                      disabled={isProcessing}
+                      onClick={() => handleProceedWithGateway('razorpay')}
+                      className="group/btn relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 px-6 py-4 text-xs font-bold text-white shadow-xl shadow-indigo-500/20 transition-all duration-200 disabled:opacity-70 active:scale-[0.98] flex items-center justify-between"
+                    >
+                      <span className="inline-flex items-center gap-2.5">
+                        {isProcessing && activeGateway === 'razorpay' ? (
+                          <Loader2 className="h-4 w-4 animate-spin text-white" />
+                        ) : (
+                          <span className="h-2 w-2 rounded-full bg-cyan-300 animate-pulse" />
+                        )}
+                        <span className="text-sm">
+                          {isProcessing && activeGateway === 'razorpay'
+                            ? 'Opening Razorpay Checkout...'
+                            : `Pay ${formatPrice(totalPayable)} via Razorpay Live`}
+                        </span>
                       </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-2">
-                        <ShieldCheck className="h-4 w-4" />
-                        Pay {formatPrice(totalPayable)} via {gateway === 'razorpay' ? 'Razorpay Live' : 'Easebuzz Pay'}
+                      <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-white/15 text-white border border-white/20">
+                        ⚡ UPI / Cards / QR
                       </span>
-                    )}
-                  </button>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={isProcessing}
+                      onClick={() => handleProceedWithGateway('easebuzz')}
+                      className="group/btn relative w-full overflow-hidden rounded-xl bg-[#0f172a] hover:bg-[#1e293b] border border-emerald-500/30 hover:border-emerald-500/60 px-6 py-3.5 text-xs font-semibold text-gray-200 hover:text-white transition-all duration-200 disabled:opacity-70 active:scale-[0.98] flex items-center justify-between"
+                    >
+                      <span className="inline-flex items-center gap-2.5">
+                        {isProcessing && activeGateway === 'easebuzz' ? (
+                          <Loader2 className="h-4 w-4 animate-spin text-emerald-400" />
+                        ) : (
+                          <Wallet className="h-4 w-4 text-emerald-400" />
+                        )}
+                        <span>
+                          {isProcessing && activeGateway === 'easebuzz'
+                            ? 'Opening Easebuzz Gateway...'
+                            : `Pay ${formatPrice(totalPayable)} via Easebuzz Pay`}
+                        </span>
+                      </span>
+                      <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                        🛡️ Easebuzz Gateway
+                      </span>
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>
@@ -469,17 +449,15 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                   <ShieldCheck className="h-3.5 w-3.5 text-indigo-400" />
                   <span>Secured via 256-bit SSL encryption</span>
                 </div>
-                <div className="mt-3 rounded-xl border border-white/10 bg-white/5 p-3">
+                <div className="mt-3 rounded-xl border border-white/10 bg-white/5 p-3 space-y-2">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="h-3.5 w-3.5 text-indigo-400" />
                     <span className="text-[10px] font-mono font-semibold text-indigo-400 uppercase tracking-wider">
-                      {gateway === 'razorpay' ? 'Razorpay Live Verified' : 'Easebuzz Secure Pay'}
+                      Verified Multi-Gateway Checkout
                     </span>
                   </div>
-                  <p className="mt-1 text-[10px] text-gray-500 leading-relaxed">
-                    {gateway === 'razorpay'
-                      ? 'Payments processed securely via Razorpay — Instant UPI Intent, QR Code, Credit/Debit Cards, and Net Banking supported.'
-                      : 'Payments processed via Easebuzz — RBI-approved payment gateway. Supports UPI, Credit/Debit Cards, and Net Banking.'}
+                  <p className="text-[10px] text-gray-500 leading-relaxed">
+                    Choose between <strong className="text-gray-300">Razorpay Live</strong> (Instant UPI & QR) or <strong className="text-gray-300">Easebuzz Pay</strong> (RBI-approved). Both gateways support UPI, Cards, and Net Banking with 256-bit encryption.
                   </p>
                 </div>
               </div>
