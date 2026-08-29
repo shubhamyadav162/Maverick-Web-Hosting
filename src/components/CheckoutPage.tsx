@@ -34,8 +34,24 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   const [stateVal, setStateVal] = useState('');
   const [pincode, setPincode] = useState('');
 
+  const [gateway, setGateway] = useState<'razorpay' | 'easebuzz'>('razorpay');
+
   const product = PRODUCTS_DATA.find((p) => p.id === serviceId) || DIGITAL_PRODUCTS_DATA.find((p) => p.id === serviceId);
   const totalPayable = product?.price || 0;
+
+  const loadRazorpaySDK = (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if ((window as any).Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
 
   const loadEasebuzzSDK = (): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -57,51 +73,118 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
     setIsError('');
 
     try {
-      const payload = {
-        amount: totalPayable,
-        phone,
-        email,
-        firstname: name,
-        productinfo: product?.title || 'Digital Product',
-        address,
-        city,
-        state: stateVal,
-        pincode
-      };
-
-      const res = await fetch('/api/easebuzz/pay-checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      if (data.status === 'success' && data.access_key) {
-        const sdkLoaded = await loadEasebuzzSDK();
-        
-        if (sdkLoaded && (window as any).EasebuzzCheckout) {
-          const easebuzzCheckout = new (window as any).EasebuzzCheckout(data.key, 'prod');
-          const options = {
-            access_key: data.access_key,
-            onResponse: (response: any) => {
-              console.log('Easebuzz SDK response:', response);
-              if (response.status === 'success') {
-                window.history.pushState({}, '', '/services?status=success');
-                onNavigate('services');
-              } else {
-                window.history.pushState({}, '', '/services?status=failed');
-                onNavigate('services');
-              }
+      if (gateway === 'razorpay') {
+        const orderRes = await fetch('/api/razorpay/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: totalPayable,
+            currency: 'INR',
+            notes: {
+              customer_name: name,
+              email,
+              phone,
+              product: product?.title || 'Product'
             }
-          };
-          easebuzzCheckout.initiatePayment(options);
+          })
+        });
+
+        const orderData = await orderRes.json();
+        if (orderData && orderData.id) {
+          const sdkLoaded = await loadRazorpaySDK();
+          if (sdkLoaded && (window as any).Razorpay) {
+            const options = {
+              key: orderData.key_id || 'rzp_live_TVZDaWYRR3Y6Dt',
+              amount: orderData.amount,
+              currency: orderData.currency || 'INR',
+              name: 'Ott King',
+              description: product?.title || 'Digital Product',
+              order_id: orderData.id,
+              prefill: {
+                name,
+                email,
+                contact: phone
+              },
+              theme: {
+                color: '#4f46e5'
+              },
+              handler: async function (response: any) {
+                console.log('Razorpay payment response:', response);
+                try {
+                  const verifyRes = await fetch('/api/razorpay/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(response)
+                  });
+                  const verifyData = await verifyRes.json();
+                  if (verifyData.verified || verifyData.status === 'success') {
+                    window.history.pushState({}, '', '/services?status=success');
+                    onNavigate('services');
+                  } else {
+                    window.history.pushState({}, '', '/services?status=failed');
+                    onNavigate('services');
+                  }
+                } catch {
+                  window.history.pushState({}, '', '/services?status=success');
+                  onNavigate('services');
+                }
+              }
+            };
+            const rzp = new (window as any).Razorpay(options);
+            rzp.open();
+          } else {
+            // Hosted checkout fallback
+            window.location.href = `/api/razorpay/pay?amount=${totalPayable}&order_id=${orderData.id}&name=Ott%20King&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`;
+          }
         } else {
-          // Fallback to hosted checkout page redirect
-          console.warn('Easebuzz SDK failed to load, redirecting to hosted checkout.');
-          window.location.href = `https://pay.easebuzz.in/pay/${data.access_key}`;
+          setIsError(orderData.error || 'Failed to create Razorpay order');
         }
       } else {
-        setIsError(data.message || data.error || 'Payment initiation failed');
+        // Easebuzz Flow
+        const payload = {
+          amount: totalPayable,
+          phone,
+          email,
+          firstname: name,
+          productinfo: product?.title || 'Digital Product',
+          address,
+          city,
+          state: stateVal,
+          pincode
+        };
+
+        const res = await fetch('/api/easebuzz/pay-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (data.status === 'success' && data.access_key) {
+          const sdkLoaded = await loadEasebuzzSDK();
+          
+          if (sdkLoaded && (window as any).EasebuzzCheckout) {
+            const easebuzzCheckout = new (window as any).EasebuzzCheckout(data.key, 'prod');
+            const options = {
+              access_key: data.access_key,
+              onResponse: (response: any) => {
+                console.log('Easebuzz SDK response:', response);
+                if (response.status === 'success') {
+                  window.history.pushState({}, '', '/services?status=success');
+                  onNavigate('services');
+                } else {
+                  window.history.pushState({}, '', '/services?status=failed');
+                  onNavigate('services');
+                }
+              }
+            };
+            easebuzzCheckout.initiatePayment(options);
+          } else {
+            window.location.href = `https://pay.easebuzz.in/pay/${data.access_key}`;
+          }
+        } else {
+          setIsError(data.message || data.error || 'Payment initiation failed');
+        }
       }
     } catch (err: any) {
       setIsError('Network error: ' + err.message);
@@ -259,6 +342,57 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                     </div>
                   </div>
 
+                  <div>
+                    <label className="block text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-2 pl-1">
+                      Select Payment Gateway <span className="text-red-400">*</span>
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div
+                        onClick={() => setGateway('razorpay')}
+                        className={`cursor-pointer rounded-xl border p-3.5 transition-all flex flex-col justify-between ${
+                          gateway === 'razorpay'
+                            ? 'border-indigo-500 bg-indigo-500/10 ring-1 ring-indigo-500/50 shadow-lg shadow-indigo-500/10'
+                            : 'border-white/10 bg-white/5 hover:border-white/20'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="font-semibold text-xs text-white flex items-center gap-1.5">
+                            <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse"></span>
+                            Razorpay Live
+                          </span>
+                          <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            Fast & UPI
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-gray-400">
+                          Instant UPI Intent, QR Code, Cards & NetBanking
+                        </p>
+                      </div>
+
+                      <div
+                        onClick={() => setGateway('easebuzz')}
+                        className={`cursor-pointer rounded-xl border p-3.5 transition-all flex flex-col justify-between ${
+                          gateway === 'easebuzz'
+                            ? 'border-emerald-500 bg-emerald-500/10 ring-1 ring-emerald-500/50 shadow-lg shadow-emerald-500/10'
+                            : 'border-white/10 bg-white/5 hover:border-white/20'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="font-semibold text-xs text-white flex items-center gap-1.5">
+                            <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
+                            Easebuzz Pay
+                          </span>
+                          <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            RBI Approved
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-gray-400">
+                          Easebuzz Hosted Gateway & Multi-option checkout
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   {isError && (
                     <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
                       <p className="text-xs text-red-400">{isError}</p>
@@ -268,17 +402,21 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                   <button
                     type="submit"
                     disabled={isProcessing}
-                    className="group/btn relative w-full overflow-hidden rounded-xl bg-indigo-600 px-6 py-3.5 text-xs font-semibold text-white shadow-lg shadow-indigo-500/10 transition-all duration-200 hover:bg-indigo-500 disabled:opacity-70 active:scale-[0.98]"
+                    className={`group/btn relative w-full overflow-hidden rounded-xl px-6 py-3.5 text-xs font-semibold text-white shadow-lg transition-all duration-200 disabled:opacity-70 active:scale-[0.98] ${
+                      gateway === 'razorpay'
+                        ? 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/20'
+                        : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20'
+                    }`}
                   >
                     {isProcessing ? (
                       <span className="inline-flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        Initiating Easebuzz Secure Gateway...
+                        Initiating {gateway === 'razorpay' ? 'Razorpay' : 'Easebuzz'} Gateway...
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-2">
                         <ShieldCheck className="h-4 w-4" />
-                        Pay {formatPrice(totalPayable)} via Easebuzz
+                        Pay {formatPrice(totalPayable)} via {gateway === 'razorpay' ? 'Razorpay Live' : 'Easebuzz Pay'}
                       </span>
                     )}
                   </button>
@@ -331,13 +469,17 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                   <ShieldCheck className="h-3.5 w-3.5 text-indigo-400" />
                   <span>Secured via 256-bit SSL encryption</span>
                 </div>
-                <div className="mt-3 rounded-xl border border-emerald-500/10 bg-emerald-500/5 p-3">
+                <div className="mt-3 rounded-xl border border-white/10 bg-white/5 p-3">
                   <div className="flex items-center gap-2">
-                    <Wallet className="h-3.5 w-3.5 text-emerald-400" />
-                    <span className="text-[10px] font-mono font-semibold text-emerald-400 uppercase tracking-wider">Easebuzz Secure Pay</span>
+                    <ShieldCheck className="h-3.5 w-3.5 text-indigo-400" />
+                    <span className="text-[10px] font-mono font-semibold text-indigo-400 uppercase tracking-wider">
+                      {gateway === 'razorpay' ? 'Razorpay Live Verified' : 'Easebuzz Secure Pay'}
+                    </span>
                   </div>
                   <p className="mt-1 text-[10px] text-gray-500 leading-relaxed">
-                    Payments processed via Easebuzz — RBI-approved payment gateway. Supports UPI, Credit/Debit Cards, and Net Banking.
+                    {gateway === 'razorpay'
+                      ? 'Payments processed securely via Razorpay — Instant UPI Intent, QR Code, Credit/Debit Cards, and Net Banking supported.'
+                      : 'Payments processed via Easebuzz — RBI-approved payment gateway. Supports UPI, Credit/Debit Cards, and Net Banking.'}
                   </p>
                 </div>
               </div>
