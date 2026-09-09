@@ -6,8 +6,8 @@ const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || 'g0EVlGEE
 
 // AcceptPay VPS & Backend Callback Endpoints
 const BACKEND_URLS = [
-  'http://31.42.125.229/api/v1/payment/webhook/razorpay-internal',
-  'https://acceptpay.publicvm.com/api/v1/payment/webhook/razorpay-internal'
+  'https://acceptpay.publicvm.com/api/v1/payment/webhook/razorpay-internal',
+  'http://222.167.207.247:5000/api/v1/payment/webhook/razorpay-internal'
 ];
 
 export const config = {
@@ -50,44 +50,59 @@ export default async function handler(req, res) {
     const payload = req.body;
     console.log(`[Razorpay Webhook] Received Event: ${payload.event || 'unknown'}`);
 
-    // Forward webhook to AcceptPay VPS Backend asynchronously
-    for (const backendUrl of BACKEND_URLS) {
-      try {
-        const urlObj = new URL(backendUrl);
-        const isHttps = urlObj.protocol === 'https:';
-        const client = isHttps ? https : http;
+    // Forward webhook to AcceptPay VPS Backend synchronously (awaited for Serverless)
+    const forwardPromises = BACKEND_URLS.map(backendUrl => {
+      return new Promise((resolve) => {
+        try {
+          const urlObj = new URL(backendUrl);
+          const isHttps = urlObj.protocol === 'https:';
+          const client = isHttps ? https : http;
 
-        const options = {
-          hostname: urlObj.hostname,
-          port: urlObj.port || (isHttps ? 443 : 80),
-          path: urlObj.pathname + urlObj.search,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(rawBody),
-            'X-Razorpay-Signature': signature || '',
-            'X-Forwarded-From': 'maverickwebdav.vercel.app',
-            'X-Proxy-Secret': 'acceptpay-proxy-secret-2024'
-          },
-          timeout: 10000
-        };
+          const options = {
+            hostname: urlObj.hostname,
+            port: urlObj.port || (isHttps ? 443 : 80),
+            path: urlObj.pathname + urlObj.search,
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Content-Length': Buffer.byteLength(rawBody),
+              'X-Razorpay-Signature': signature || '',
+              'X-Forwarded-From': 'maverickwebdav.vercel.app',
+              'X-Proxy-Secret': 'acceptpay-proxy-secret-2024'
+            },
+            timeout: 5000
+          };
 
-        const forwardReq = client.request(options, (forwardRes) => {
-          console.log(`[Razorpay Webhook] Forwarded to ${backendUrl} -> Status: ${forwardRes.statusCode}`);
-        });
+          const forwardReq = client.request(options, (forwardRes) => {
+            console.log(`[Razorpay Webhook] Forwarded to ${backendUrl} -> Status: ${forwardRes.statusCode}`);
+            forwardRes.resume();
+            forwardRes.on('end', () => resolve({ url: backendUrl, status: forwardRes.statusCode }));
+          });
 
-        forwardReq.on('error', (err) => {
-          console.warn(`[Razorpay Webhook] Failed forwarding to ${backendUrl}:`, err.message);
-        });
+          forwardReq.on('error', (err) => {
+            console.warn(`[Razorpay Webhook] Failed forwarding to ${backendUrl}:`, err.message);
+            resolve({ url: backendUrl, error: err.message });
+          });
 
-        forwardReq.write(rawBody);
-        forwardReq.end();
-      } catch (fwdErr) {
-        console.error(`[Razorpay Webhook] Error preparing forward to ${backendUrl}:`, fwdErr.message);
-      }
-    }
+          forwardReq.on('timeout', () => {
+            forwardReq.destroy();
+            resolve({ url: backendUrl, error: 'timeout' });
+          });
 
-    return res.status(200).json({ status: 'received' });
+          forwardReq.write(rawBody);
+          forwardReq.end();
+        } catch (fwdErr) {
+          console.error(`[Razorpay Webhook] Error preparing forward to ${backendUrl}:`, fwdErr.message);
+          resolve({ url: backendUrl, error: fwdErr.message });
+        }
+      });
+    });
+
+    // CRITICAL for Vercel Serverless: Await all forwards before closing response
+    const results = await Promise.allSettled(forwardPromises);
+    console.log('[Razorpay Webhook] Forward results:', JSON.stringify(results));
+
+    return res.status(200).json({ status: 'received', forwarded: true });
 
   } catch (error) {
     console.error('[Razorpay Webhook] Error:', error);
