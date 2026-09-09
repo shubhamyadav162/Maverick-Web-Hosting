@@ -254,7 +254,7 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                       required
                       value={name}
                       onChange={e => setName(e.target.value)}
-                      placeholder="Shubham Yadav"
+                      placeholder="Vikram Malhotra"
                       className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
                     />
                   </div>
@@ -284,7 +284,7 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                       onChange={e => setPhone(e.target.value)}
                       pattern="[0-9]{10}"
                       maxLength={10}
-                      placeholder="9027579170"
+                      placeholder="9810012345"
                       className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
                     />
                   </div>
@@ -298,7 +298,7 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                       required
                       value={address}
                       onChange={e => setAddress(e.target.value)}
-                      placeholder="Bukhara, Near Bakli Fatak"
+                      placeholder="Plot No. 42, Okhla Industrial Area"
                       className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
                     />
                   </div>
@@ -313,7 +313,7 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                         required
                         value={city}
                         onChange={e => setCity(e.target.value)}
-                        placeholder="Bijnor"
+                        placeholder="New Delhi"
                         className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
                       />
                     </div>
@@ -326,7 +326,7 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                         required
                         value={stateVal}
                         onChange={e => setStateVal(e.target.value)}
-                        placeholder="Uttar Pradesh"
+                        placeholder="Delhi"
                         className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
                       />
                     </div>
@@ -341,7 +341,7 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                         onChange={e => setPincode(e.target.value)}
                         pattern="[0-9]{6}"
                         maxLength={6}
-                        placeholder="246701"
+                        placeholder="110020"
                         className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-gray-500 focus:border-indigo-500 focus:bg-black/30 focus:outline-none transition-all font-sans"
                       />
                     </div>

@@ -33,7 +33,7 @@ const TESTIMONIALS_DATA: Testimonial[] = [
     role: "VP of Product",
     company: "CoreShip Logistics",
     avatarInitials: "PP",
-    quote: "Shubham and his team built our cross-platform mobile delivery app. The offline-first local caching engine is incredibly fast, and the 60FPS UI interactive transitions feel super premium. Absolute professionals with unmatched engineering quality.",
+    quote: "The Maverick team built our cross-platform mobile delivery app. The offline-first local caching engine is incredibly fast, and the 60FPS UI interactive transitions feel super premium. Absolute professionals with unmatched engineering quality.",
     rating: 5,
     projectScope: "Mobile App Development",
     tags: ["React Native", "Offline Engine", "UX/UI"]
@@ -42,7 +42,7 @@ const TESTIMONIALS_DATA: Testimonial[] = [
     id: 3,
     name: "Rajesh Kumar",
     role: "Managing Director",
-    company: "Bijnor Agro Industries",
+    company: "Apex Global Logistics",
     avatarInitials: "RK",
     quote: "The team built custom workflow automation modules that scaled our operations throughput by 300%. Zero bloatware, just exceptionally robust backend pipelines coupled with clean, lightning-fast UI analytics.",
     rating: 5,

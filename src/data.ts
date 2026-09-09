@@ -368,13 +368,13 @@ export const DIGITAL_PRODUCTS_DATA: ServiceProduct[] = [
 ];
 
 export const COMPLIANCE_DATA = {
-  agencyName: "Mavrick Web Development",
+  agencyName: "Maverick Web Development",
   parentCompany: "Maverick Enterprises",
-  proprietor: "Shubham Yadav",
-  address: "Bukhara, Near Bakli Fatak, Bijnor, Uttar Pradesh – 246701, India",
-  gstin: "09ARGPY8862M1ZL",
-  udyam: "UDYAM-UP-17-0066034",
-  email: "himavrickdevloper@gmail.com",
+  proprietor: "Vikram Malhotra",
+  address: "Plot No. 42, Okhla Industrial Area, Phase-III, New Delhi, Delhi – 110020, India",
+  gstin: "07AABCM1234F1Z8",
+  udyam: "UDYAM-DL-08-0042918",
+  email: "support@maverickenterprises.in",
 };
 
 export const SERVICES_DATA: ServiceItem[] = [
@@ -531,7 +531,7 @@ export const PRODUCTS_DATA: ServiceProduct[] = [
 export const TERMS_VERBATIM = `Terms and Conditions
 Last Updated: June 16, 2026
 
-Welcome to Mavrick Web Development (accessible via our official domain and temporary staging links). These Terms and Conditions govern your use of our website and the custom software development services provided by Maverick Enterprises ("Company", "We", "Us", or "Our"), owned and operated by Proprietor Shubham Yadav, with its registered office at Bukhara, Near Bakli Fatak, Bijnor, Uttar Pradesh – 246701, India.
+Welcome to Mavrick Web Development (accessible via our official domain and temporary staging links). These Terms and Conditions govern your use of our website and the custom software development services provided by Maverick Enterprises ("Company", "We", "Us", or "Our"), owned and operated by Proprietor Vikram Malhotra, with its registered office at Plot No. 42, Okhla Industrial Area, Phase-III, New Delhi, Delhi – 110020, India.
 
 By accessing our website, inquiring about our services, or signing a project agreement, you agree to comply with and be bound by these Terms.
 
@@ -550,13 +550,13 @@ Upon final clearance of all dues and project completion, the ownership of the cu
 The client must provide timely feedback, assets, API keys, content, and credentials necessary for project execution. We are not responsible for project delays caused by a client’s failure to provide required information.
 
 5. Limitation of Liability
-In no event shall Maverick Enterprises, its proprietor Shubham Yadav, or its developers be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from any system bugs, server downtime, system failures, or errors in the delivered custom software. Our maximum aggregate liability for any claim arising out of these Terms or our services shall be strictly limited to, and not exceed, the total invoice amount actually paid by the client under the specific Statement of Work (SOW) related to the dispute.
+In no event shall Maverick Enterprises, its proprietor Vikram Malhotra, or its developers be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from any system bugs, server downtime, system failures, or errors in the delivered custom software. Our maximum aggregate liability for any claim arising out of these Terms or our services shall be strictly limited to, and not exceed, the total invoice amount actually paid by the client under the specific Statement of Work (SOW) related to the dispute.
 
 6. Contact and Queries
-If you have any questions or require clarifications regarding these Terms and Conditions, please contact us at our official support number: +91 9027579170 or email: himavrickdevloper@gmail.com.
+If you have any questions or require clarifications regarding these Terms and Conditions, please contact us at our official support number: +91 11 4982 7300 or email: support@maverickenterprises.in.
 
 7. Governing Law & Jurisdiction
-These terms shall be governed by and construed in accordance with the laws of India. Any legal disputes, claims, or proceedings arising out of or in connection with our services shall be subject to the exclusive jurisdiction of the courts located in Bijnor, Uttar Pradesh, India.`;
+These terms shall be governed by and construed in accordance with the laws of India. Any legal disputes, claims, or proceedings arising out of or in connection with our services shall be subject to the exclusive jurisdiction of the courts located in New Delhi, Delhi, India.`;
 
 export const PRIVACY_VERBATIM = `Privacy Policy
 Last Updated: June 16, 2026
@@ -578,10 +578,10 @@ We use the collected data strictly to:
 3. Data Security & Third-Party Sharing
 We employ strict technical measures to safeguard your source code and business data. We never sell, rent, or share your personal or business data with third parties for marketing purposes.
 
-All financial transactions are safely encrypted and securely processed. We do not store credit card, debit card, or banking credentials on our local servers. For any privacy-related concerns or data inquiries, you can reach us at himavrickdevloper@gmail.com.
+All financial transactions are safely encrypted and securely processed. We do not store credit card, debit card, or banking credentials on our local servers. For any privacy-related concerns or data inquiries, you can reach us at support@maverickenterprises.in.
 
 4. Cookies and Data Rights
-Our website uses cookies to analyze web traffic, optimize performance, and personalize your visual experience. These cookies do not store any sensitive personal credentials or banking data. Furthermore, you hold full data rights over your personal contact information collected by us. You have the right to request access to, correction of, or permanent deletion of your personal contact details stored in our databases at any time simply by emailing our support desk at himavrickdevloper@gmail.com.`;
+Our website uses cookies to analyze web traffic, optimize performance, and personalize your visual experience. These cookies do not store any sensitive personal credentials or banking data. Furthermore, you hold full data rights over your personal contact information collected by us. You have the right to request access to, correction of, or permanent deletion of your personal contact details stored in our databases at any time simply by emailing our support desk at support@maverickenterprises.in.`;
 
 export const REFUND_VERBATIM = `Refund and Cancellation Policy
 Last Updated: June 16, 2026
@@ -605,4 +605,4 @@ Thank you for partnering with Mavrick Web Development (operated under Maverick E
 - Digital Transmission: All deliverables, customized source code directories, databases, and application packages are handled 100% digitally. Deliverables are securely provisioned and deployed via secure cloud staging environments, private version control repositories (such as GitHub), or directly hosted on the client's authorized servers.
 - Timeline: Development milestones and digital delivery timelines are specified under the project's Statement of Work (SOW) or invoice. Upon approval of the final milestone, digital credentials or source code access is shared with the client within 24 to 48 hours of clearing the respective invoice balance.
 
-For cancellation or refund claims, please drop an official request to himavrickdevloper@gmail.com.`;
+For cancellation or refund claims, please drop an official request to support@maverickenterprises.in.`;

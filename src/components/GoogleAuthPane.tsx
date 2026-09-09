@@ -18,9 +18,9 @@ export default function GoogleAuthPane() {
 
   const defaultAccounts: GoogleAccount[] = [
     {
-      name: 'Shubham Yadav',
-      email: 'shubham.1614@gmail.com',
-      initials: 'SY',
+      name: 'Vikram Malhotra',
+      email: 'vikram.malhotra@company.com',
+      initials: 'VM',
       avatarBlur: 'bg-indigo-600',
     },
     {

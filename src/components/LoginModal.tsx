@@ -33,11 +33,11 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
   // Dynamic email domain & prefix parsing engine to generate realistic usernames
   const parseEmailToUser = (emailAddress: string): User => {
     const cleanEmail = emailAddress.trim();
-    if (cleanEmail.toLowerCase() === 'shubham.1614@gmail.com') {
+    if (cleanEmail.toLowerCase() === 'vikram.malhotra@company.com') {
       return {
-        name: 'Shubham Yadav',
+        name: 'Vikram Malhotra',
         email: cleanEmail,
-        initials: 'SY'
+        initials: 'VM'
       };
     }
 

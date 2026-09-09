@@ -4,10 +4,12 @@ import http from 'http';
 
 const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || 'g0EVlGEErOuiu0maLFAq8s96';
 
-// AcceptPay VPS & Backend Callback Endpoints
+// AcceptPay VPS Backend Callback Endpoint
+// NOTE: Only ONE URL — both acceptpay.publicvm.com and 222.167.207.247 resolve to the
+// same Node.js process. Sending to both caused every webhook to be processed TWICE,
+// double-crediting the merchant wallet on every successful payment.
 const BACKEND_URLS = [
-  'https://acceptpay.publicvm.com/api/v1/payment/webhook/razorpay-internal',
-  'http://222.167.207.247:5000/api/v1/payment/webhook/razorpay-internal'
+  'https://acceptpay.publicvm.com/api/v1/payment/webhook/razorpay-internal'
 ];
 
 export const config = {

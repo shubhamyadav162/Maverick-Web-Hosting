@@ -272,7 +272,7 @@ export default function App() {
 
         <motion.a
           id="floating-email-anchor"
-          href="mailto:himavrickdevloper@gmail.com?subject=Inquiry%20-%20Mavrick%20Web%20Development&body=Hello%20Mavrick%20Team%2C%0A%0AI%20am%20interested%20in%20discussing%20a%20custom%20software%2Fweb%20project%20with%20you.%20Please%20let%20me%20know%20your%20availability%20for%20a%20brief%20consultation.%0A%0ABest%20regards%2C"
+          href="mailto:support@maverickenterprises.in?subject=Inquiry%20-%20Mavrick%20Web%20Development&body=Hello%20Mavrick%20Team%2C%0A%0AI%20am%20interested%20in%20discussing%20a%20custom%20software%2Fweb%20project%20with%20you.%20Please%20let%20me%20know%20your%20availability%20for%20a%20brief%20consultation.%0A%0ABest%20regards%2C"
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
           className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-[#0B4A94] to-[#00A896] text-white shadow-[0_0_20px_rgba(11,74,148,0.4)] transition-shadow duration-300 hover:shadow-[0_0_25px_rgba(0,168,150,0.6)] border border-white/15 relative overflow-hidden"

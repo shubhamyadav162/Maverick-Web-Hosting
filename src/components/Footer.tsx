@@ -188,8 +188,7 @@ export default function Footer({ onNavigate }: FooterProps) {
               <div className="flex items-start gap-1.5 text-xs text-gray-400">
                 <MapPin className="h-4 w-4 shrink-0 text-gray-500 mt-0.5" />
                 <span className="leading-relaxed text-[11px]">
-                  Bukhara, Near Bakli Fatak,<br />
-                  Bijnor, Uttar Pradesh – 246701, India
+                  {COMPLIANCE_DATA.address}
                 </span>
               </div>
             </div>
