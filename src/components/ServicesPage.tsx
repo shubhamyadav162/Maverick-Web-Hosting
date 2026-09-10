@@ -37,6 +37,8 @@ const iconMap: Record<string, ElementType> = {
   ShoppingCart,
   Server,
   Cpu,
+  ShieldCheck,
+  Zap,
 };
 
 function formatPrice(price: number): string {
@@ -146,7 +148,7 @@ export default function ServicesPage({ onNavigate, onNavigateToCheckout }: Servi
                   Core Development: ₹1,000 – ₹9,999
                 </span>
                 <span className="px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 font-bold">
-                  Enterprise Clusters: ₹10,000 – ₹25,000+
+                  Enterprise & FinTech Clusters: ₹10,000 – ₹1,00,000+
                 </span>
               </div>
             </div>
@@ -169,7 +171,7 @@ export default function ServicesPage({ onNavigate, onNavigateToCheckout }: Servi
               { id: 'all', label: `All Solutions (${allProducts.length})` },
               { id: 'micro', label: 'Micro Tasks (₹10 – ₹999)' },
               { id: 'standard', label: 'Core Packages (₹1k – ₹9.9k)' },
-              { id: 'enterprise', label: 'Enterprise & Infra (₹10k+)' },
+              { id: 'enterprise', label: 'Enterprise & FinTech (₹10k – ₹100k)' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -213,16 +215,19 @@ export default function ServicesPage({ onNavigate, onNavigateToCheckout }: Servi
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 group-hover:border-indigo-500/30 group-hover:bg-indigo-500/10 transition-all duration-300">
                     <Icon className="h-5 w-5 text-indigo-400" />
                   </div>
-                  {product.price >= 20000 && (
+                  {product.price >= 50000 ? (
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 font-bold">
+                      FinTech Infrastructure
+                    </span>
+                  ) : product.price >= 20000 ? (
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 font-bold">
                       Enterprise Tier
                     </span>
-                  )}
-                  {product.price === 10 && (
+                  ) : product.price === 10 ? (
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold">
                       Instant Ping
                     </span>
-                  )}
+                  ) : null}
                 </div>
 
                 <div className="flex-1">
