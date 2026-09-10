@@ -48,6 +48,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(mapSupabaseUser(session));
       setIsLoading(false);
+    }).catch((err) => {
+      console.warn('Supabase auth session ignored:', err);
+      setIsLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {

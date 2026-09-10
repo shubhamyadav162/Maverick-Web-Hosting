@@ -19,11 +19,11 @@ function formatPrice(price: number): string {
 function getServiceIdFromUrl(): string | null {
   if (typeof window === 'undefined') return null;
   const params = new URLSearchParams(window.location.search);
-  return params.get('service');
+  return params.get('service') || params.get('plan') || params.get('id');
 }
 
 export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
-  const [serviceId] = useState<string | null>(getServiceIdFromUrl);
+  const [serviceId, setServiceId] = useState<string | null>(getServiceIdFromUrl);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isError, setIsError] = useState('');
   const [name, setName] = useState('');
@@ -36,7 +36,8 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
 
   const [activeGateway, setActiveGateway] = useState<'razorpay' | 'easebuzz' | null>(null);
 
-  const product = PRODUCTS_DATA.find((p) => p.id === serviceId) || DIGITAL_PRODUCTS_DATA.find((p) => p.id === serviceId);
+  const activeId = getServiceIdFromUrl() || serviceId;
+  const product = PRODUCTS_DATA.find((p) => p.id === activeId) || DIGITAL_PRODUCTS_DATA.find((p) => p.id === activeId);
   const totalPayable = product?.price || 0;
 
   const loadRazorpaySDK = (): Promise<boolean> => {
@@ -195,6 +196,13 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleProceedToPayment = (e?: FormEvent) => {
+    if (e && e.preventDefault) {
+      e.preventDefault();
+    }
+    handleProceedWithGateway('razorpay');
   };
 
   return (
