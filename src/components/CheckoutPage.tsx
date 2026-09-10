@@ -68,10 +68,9 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   };
 
   const handleProceedWithGateway = async (selectedGateway: 'razorpay' | 'easebuzz') => {
-    if (!name || !email || !phone) {
-      setIsError('Please enter your Name, Email, and Mobile number first.');
-      return;
-    }
+    const customerName = (name && name.trim()) ? name.trim() : 'Customer';
+    const customerEmail = (email && email.trim()) ? email.trim() : 'client@maverickenterprises.in';
+    const customerPhone = (phone && phone.trim()) ? phone.trim() : '9876543210';
 
     setIsProcessing(true);
     setActiveGateway(selectedGateway);
@@ -86,9 +85,9 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
             amount: totalPayable,
             currency: 'INR',
             notes: {
-              customer_name: name,
-              email,
-              phone,
+              customer_name: customerName,
+              email: customerEmail,
+              phone: customerPhone,
               product: product?.title || 'Product'
             }
           })
@@ -102,13 +101,13 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
               key: orderData.key_id || 'rzp_live_TVZDaWYRR3Y6Dt',
               amount: orderData.amount,
               currency: orderData.currency || 'INR',
-              name: 'Ott King',
+              name: 'Maverick Enterprises',
               description: product?.title || 'Digital Product',
               order_id: orderData.id,
               prefill: {
-                name,
-                email,
-                contact: phone
+                name: customerName,
+                email: customerEmail,
+                contact: customerPhone
               },
               theme: {
                 color: '#4f46e5'
@@ -123,14 +122,11 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
                   });
                   const verifyData = await verifyRes.json();
                   if (verifyData.verified || verifyData.status === 'success') {
-                    window.history.pushState({}, '', '/services?status=success');
                     onNavigate('services');
                   } else {
-                    window.history.pushState({}, '', '/services?status=failed');
                     onNavigate('services');
                   }
                 } catch {
-                  window.history.pushState({}, '', '/services?status=success');
                   onNavigate('services');
                 }
               }
@@ -139,10 +135,13 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
             rzp.open();
           } else {
             // Hosted checkout fallback
-            window.location.href = `/api/razorpay/pay?amount=${totalPayable}&order_id=${orderData.id}&name=Ott%20King&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`;
+            window.location.href = `/api/razorpay/pay?amount=${totalPayable}&order_id=${orderData.id}&name=Maverick%20Enterprises&email=${encodeURIComponent(customerEmail)}&phone=${encodeURIComponent(customerPhone)}`;
           }
         } else {
-          setIsError(orderData.error || 'Failed to create Razorpay order');
+          const errMsg = typeof orderData.error === 'string'
+            ? orderData.error
+            : (orderData.error?.description || orderData.error?.message || 'Failed to create Razorpay order');
+          setIsError(errMsg);
         }
       } else {
         // Easebuzz Flow
@@ -209,8 +208,8 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <button
           onClick={() => {
-            window.history.pushState({}, '', '/services');
             onNavigate('services');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
           className="group inline-flex items-center gap-2 text-xs font-mono text-gray-500 hover:text-white transition-colors mb-10 py-1"
         >
@@ -229,8 +228,8 @@ export default function CheckoutPage({ onNavigate }: CheckoutPageProps) {
             </p>
             <button
               onClick={() => {
-                window.history.pushState({}, '', '/services');
                 onNavigate('services');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 px-6 py-3 text-xs font-semibold text-white shadow-lg shadow-indigo-500/10 transition-all duration-200 active:scale-[0.98]"
             >

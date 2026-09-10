@@ -37,9 +37,11 @@ export default async function handler(req, res) {
     }
 
     // Razorpay requires amount in paise (1 INR = 100 paise)
-    const amountInPaise = typeof amount === 'number' && amount < 1000000 && !Number.isInteger(amount * 100)
-      ? Math.round(amount * 100)
-      : Math.round(Number(amount));
+    const numAmount = Number(amount);
+    if (isNaN(numAmount) || numAmount <= 0) {
+      return res.status(400).json({ error: 'Valid amount is required' });
+    }
+    const amountInPaise = Math.round(numAmount * 100);
 
     const postData = JSON.stringify({
       amount: amountInPaise,

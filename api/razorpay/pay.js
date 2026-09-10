@@ -26,12 +26,8 @@ export default async function handler(req, res) {
     } = params || {};
 
     let orderId = order_id;
-    let amountInPaise = amount ? Math.round(Number(amount)) : 10000;
-
-    // Convert rupees to paise if passed in standard rupees
-    if (amount && Number(amount) < 100000 && !Number.isInteger(Number(amount) * 100)) {
-      amountInPaise = Math.round(Number(amount) * 100);
-    }
+    const numAmount = Number(amount);
+    let amountInPaise = (!isNaN(numAmount) && numAmount > 0) ? Math.round(numAmount * 100) : 10000;
 
     // If order_id not passed, generate one on the fly
     if (!orderId && amountInPaise > 0) {
