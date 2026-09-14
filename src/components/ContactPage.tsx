@@ -74,8 +74,8 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
                   </div>
                   <div>
                     <p className="text-[10px] font-mono uppercase tracking-wider text-indigo-400">Phone</p>
-                    <a href="tel:+919027579170" className="text-sm text-white hover:underline font-mono">
-                      +91 9027579170
+                    <a href="tel:+911149827300" className="text-sm text-white hover:underline font-mono">
+                      +91 11 4982 7300
                     </a>
                   </div>
                 </div>
